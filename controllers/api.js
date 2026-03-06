@@ -211,9 +211,16 @@ exports.getLastfm = async (req, res, next) => {
       });
     });
   try {
-    const { artist: artistInfo } = await getArtistInfo();
-    const topTracks = await getArtistTopTracks();
-    const topAlbums = await getArtistTopAlbums();
+    // ⚡ Bolt: Fetch Last.fm artist info, tracks, and albums concurrently to reduce total response time
+    const [
+      { artist: artistInfo },
+      topTracks,
+      topAlbums
+    ] = await Promise.all([
+      getArtistInfo(),
+      getArtistTopTracks(),
+      getArtistTopAlbums()
+    ]);
     const artist = {
       name: artistInfo.name,
       image: artistInfo.image ? artistInfo.image.slice(-1)[0]['#text'] : null,
@@ -310,7 +317,7 @@ exports.postTwitter = (req, res, next) => {
  */
 exports.getSteam = async (req, res, next) => {
   const steamId = req.user.steam;
-  const params = { l: 'english', steamid: steamId, key: process.env.STEAM_KEY };
+  const baseParams = { l: 'english', steamid: steamId, key: process.env.STEAM_KEY };
 
   // makes a url with search query
   const makeURL = (baseURL, params) => {
@@ -321,6 +328,7 @@ exports.getSteam = async (req, res, next) => {
   };
     // get the list of the recently played games, pick the most recent one and get its achievements
   const getPlayerAchievements = () => {
+    const params = { ...baseParams };
     const recentGamesURL = makeURL('http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/', params);
     return axios.get(recentGamesURL)
       .then(({ data }) => {
@@ -354,24 +362,26 @@ exports.getSteam = async (req, res, next) => {
       });
   };
   const getPlayerSummaries = () => {
-    params.steamids = steamId;
+    const params = { ...baseParams, steamids: steamId };
     const url = makeURL('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/', params);
     return axios.get(url)
       .then(({ data }) => data)
       .catch(() => Promise.reject(new Error('There was an error while getting player summary')));
   };
   const getOwnedGames = () => {
-    params.include_appinfo = 1;
-    params.include_played_free_games = 1;
+    const params = { ...baseParams, include_appinfo: 1, include_played_free_games: 1 };
     const url = makeURL('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/', params);
     return axios.get(url)
       .then(({ data }) => data)
       .catch(() => Promise.reject(new Error('There was an error while getting owned games')));
   };
   try {
-    const playerstats = await getPlayerAchievements();
-    const playerSummaries = await getPlayerSummaries();
-    const ownedGames = await getOwnedGames();
+    // ⚡ Bolt: Fetch Steam achievements, summaries, and owned games concurrently to reduce total response time
+    const [playerstats, playerSummaries, ownedGames] = await Promise.all([
+      getPlayerAchievements(),
+      getPlayerSummaries(),
+      getOwnedGames()
+    ]);
     res.render('api/steam', {
       title: 'Steam Web API',
       ownedGames: ownedGames.response,
@@ -467,9 +477,12 @@ exports.getTwitch = async (req, res, next) => {
       .catch((err) => Promise.reject(new Error(`There was an error while getting followers ${err}`)));
 
   try {
-    const yourTwitchUser = await getUser(twitchID);
-    const otherTwitchUser = await getUser(44322889);
-    const twitchFollowers = await getFollowers();
+    // ⚡ Bolt: Fetch Twitch users and followers concurrently to reduce total response time
+    const [yourTwitchUser, otherTwitchUser, twitchFollowers] = await Promise.all([
+      getUser(twitchID),
+      getUser(44322889),
+      getFollowers()
+    ]);
     res.render('api/twitch', {
       title: 'Twitch API',
       yourTwitchUserData: yourTwitchUser.data[0],
@@ -673,8 +686,11 @@ exports.getLob = async (req, res, next) => {
     .catch((error) => Promise.reject(new Error(`Could not create and send letter: ${error}`)));
 
   try {
-    const uspsLetter = await createAndMailLetter();
-    const zipDetails = await lookupZip();
+    // ⚡ Bolt: Create letter and lookup zip concurrently to reduce total response time
+    const [uspsLetter, zipDetails] = await Promise.all([
+      createAndMailLetter(),
+      lookupZip()
+    ]);
     res.render('api/lob', {
       title: 'Lob API',
       zipDetails,
