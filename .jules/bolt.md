@@ -1,0 +1,3 @@
+## 2023-10-24 - Speeding up Mongoose Reads with .lean()
+**Learning:** By default, Mongoose queries return instances of the Mongoose Document class. Documents are much heavier than vanilla JavaScript objects, because they have a lot of internal state for change tracking. We can append `.lean()` to queries to return plain JavaScript objects instead.
+**Action:** Use `.lean()` whenever you're querying for documents that won't be updated (e.g. read-only checks to see if an email already exists), saving significant memory and compute time. BUT CAUTION: Using `.lean()` strips Mongoose-specific properties, meaning virtuals (like `id` vs `_id`) won't be available!
