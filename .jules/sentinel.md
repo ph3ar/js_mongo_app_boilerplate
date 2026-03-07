@@ -1,0 +1,4 @@
+## 2026-03-07 - Open Redirect via req.session.returnTo
+**Vulnerability:** The application was vulnerable to Open Redirect. The Express middleware in `app.js` naively assigned `req.originalUrl` to `req.session.returnTo`. An attacker could supply a URL like `//evil.com` or `/\evil.com`, which Express would accept. After login, `res.redirect(req.session.returnTo)` would redirect the user to the attacker's domain using a protocol-relative redirect.
+**Learning:** `req.originalUrl` should never be implicitly trusted as a local path for redirection, even if it is the requested path, because Express parses protocol-relative paths (`//domain.com`) which browsers follow externally.
+**Prevention:** Always validate `returnTo` URLs before storing them or redirecting. Use a strict regex like `/^\/[^\/\\]/` to ensure the path starts with exactly one forward slash and no backslashes, defaulting to `/` if invalid.
