@@ -211,9 +211,16 @@ exports.getLastfm = async (req, res, next) => {
       });
     });
   try {
-    const { artist: artistInfo } = await getArtistInfo();
-    const topTracks = await getArtistTopTracks();
-    const topAlbums = await getArtistTopAlbums();
+    // ⚡ Bolt: Fetch artist info, top tracks, and top albums concurrently to reduce API latency
+    const [
+      { artist: artistInfo },
+      topTracks,
+      topAlbums
+    ] = await Promise.all([
+      getArtistInfo(),
+      getArtistTopTracks(),
+      getArtistTopAlbums()
+    ]);
     const artist = {
       name: artistInfo.name,
       image: artistInfo.image ? artistInfo.image.slice(-1)[0]['#text'] : null,
@@ -369,9 +376,16 @@ exports.getSteam = async (req, res, next) => {
       .catch(() => Promise.reject(new Error('There was an error while getting owned games')));
   };
   try {
-    const playerstats = await getPlayerAchievements();
-    const playerSummaries = await getPlayerSummaries();
-    const ownedGames = await getOwnedGames();
+    // ⚡ Bolt: Fetch player achievements, summaries, and owned games concurrently to reduce API latency
+    const [
+      playerstats,
+      playerSummaries,
+      ownedGames
+    ] = await Promise.all([
+      getPlayerAchievements(),
+      getPlayerSummaries(),
+      getOwnedGames()
+    ]);
     res.render('api/steam', {
       title: 'Steam Web API',
       ownedGames: ownedGames.response,
@@ -467,9 +481,16 @@ exports.getTwitch = async (req, res, next) => {
       .catch((err) => Promise.reject(new Error(`There was an error while getting followers ${err}`)));
 
   try {
-    const yourTwitchUser = await getUser(twitchID);
-    const otherTwitchUser = await getUser(44322889);
-    const twitchFollowers = await getFollowers();
+    // ⚡ Bolt: Fetch user data and followers concurrently to reduce API latency
+    const [
+      yourTwitchUser,
+      otherTwitchUser,
+      twitchFollowers
+    ] = await Promise.all([
+      getUser(twitchID),
+      getUser(44322889),
+      getFollowers()
+    ]);
     res.render('api/twitch', {
       title: 'Twitch API',
       yourTwitchUserData: yourTwitchUser.data[0],
@@ -673,8 +694,14 @@ exports.getLob = async (req, res, next) => {
     .catch((error) => Promise.reject(new Error(`Could not create and send letter: ${error}`)));
 
   try {
-    const uspsLetter = await createAndMailLetter();
-    const zipDetails = await lookupZip();
+    // ⚡ Bolt: Create letter and lookup zip concurrently to reduce API latency
+    const [
+      uspsLetter,
+      zipDetails
+    ] = await Promise.all([
+      createAndMailLetter(),
+      lookupZip()
+    ]);
     res.render('api/lob', {
       title: 'Lob API',
       zipDetails,
