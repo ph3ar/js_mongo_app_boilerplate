@@ -155,7 +155,8 @@ passport.use(new FacebookStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile._json.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile._json.email }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Facebook manually from Account Settings.' });
@@ -215,7 +216,8 @@ passport.use(new GitHubStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile._json.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile._json.email }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with GitHub manually from Account Settings.' });
@@ -333,7 +335,8 @@ const googleStrategyConfig = new GoogleStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile.emails[0].value }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Google manually from Account Settings.' });
@@ -399,7 +402,8 @@ passport.use(new LinkedInStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile.emails[0].value }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with LinkedIn manually from Account Settings.' });
@@ -515,7 +519,8 @@ const twitchStrategyConfig = new TwitchStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile.email }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Twtich manually from Account Settings.' });
