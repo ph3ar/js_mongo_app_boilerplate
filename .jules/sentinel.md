@@ -1,0 +1,4 @@
+## 2024-05-23 - Open Redirect Vulnerability in session returnTo
+**Vulnerability:** The application used `req.originalUrl` to set `req.session.returnTo` directly without validation. An attacker could specify a protocol-relative URL (e.g., `//malicious.com`) which would lead to an open redirect when the application redirects to this value upon successful login.
+**Learning:** `req.originalUrl` can be controlled by user input and may contain protocol-relative paths that bypass basic open redirect protections if not explicitly checked against starting with `//`.
+**Prevention:** Sanitize the session redirect variable by checking if the URL string begins with a single forward slash and not a double forward slash (e.g., `returnTo.match(/^\/[^\/]/)` or equals `/`) before trusting it as a relative redirect URL.
