@@ -101,7 +101,7 @@ exports.postSignup = (req, res, next) => {
   // ⚡ Bolt Performance Optimization:
   // Using .select('_id').lean() for pure existence checks reduces database payload size
   // and completely bypasses Mongoose document hydration. This minimizes memory overhead.
-  User.findOne({ email: req.body.email }).select('_id').lean().exec((err, existingUser) => {
+  User.findOne({ email: String(req.body.email) }).select('_id').lean().exec((err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
