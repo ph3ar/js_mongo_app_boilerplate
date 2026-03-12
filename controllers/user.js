@@ -100,7 +100,7 @@ exports.postSignup = (req, res, next) => {
 
   // Use .lean() for read-only query optimization since we only check for existence
   // Note: plain JS objects lose Mongoose virtuals like .id
-  User.findOne({ email: req.body.email }).lean().exec((err, existingUser) => {
+  User.findOne({ email: String(req.body.email) }).lean().exec((err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
