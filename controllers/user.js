@@ -98,7 +98,7 @@ exports.postSignup = (req, res, next) => {
     password: req.body.password
   });
 
-  User.findOne({ email: req.body.email }, (err, existingUser) => {
+  User.findOne({ email: String(req.body.email) }, (err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
@@ -503,7 +503,7 @@ exports.postForgot = (req, res, next) => {
 
   const setRandomToken = (token) =>
     User
-      .findOne({ email: req.body.email })
+      .findOne({ email: String(req.body.email) })
       .then((user) => {
         if (!user) {
           req.flash('errors', { msg: 'Account with that email address does not exist.' });
