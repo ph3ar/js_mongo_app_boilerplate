@@ -99,7 +99,7 @@ exports.postSignup = (req, res, next) => {
   });
 
   // ⚡ Bolt: Using .lean() for read-only existence check to avoid Mongoose document instantiation overhead
-  User.findOne({ email: req.body.email }).lean().exec((err, existingUser) => {
+  User.findOne({ email: String(req.body.email) }).lean().exec((err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
