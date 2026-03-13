@@ -28,6 +28,8 @@ exports.getLogin = (req, res) => {
  */
 exports.postLogin = (req, res, next) => {
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
   if (validator.isEmpty(req.body.password)) validationErrors.push({ msg: 'Password cannot be blank.' });
 
@@ -83,6 +85,9 @@ exports.getSignup = (req, res) => {
  */
 exports.postSignup = (req, res, next) => {
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
+  req.body.confirmPassword = String(req.body.confirmPassword || '');
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match' });
@@ -132,6 +137,13 @@ exports.getAccount = (req, res) => {
  */
 exports.postUpdateProfile = (req, res, next) => {
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.name = String(req.body.name || '');
+  req.body.gender = String(req.body.gender || '');
+  req.body.steamid = String(req.body.steamid || '');
+  req.body.location = String(req.body.location || '');
+  req.body.website = String(req.body.website || '');
+
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
 
   if (validationErrors.length) {
@@ -169,6 +181,9 @@ exports.postUpdateProfile = (req, res, next) => {
  */
 exports.postUpdatePassword = (req, res, next) => {
   const validationErrors = [];
+  req.body.password = String(req.body.password || '');
+  req.body.confirmPassword = String(req.body.confirmPassword || '');
+
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match' });
 
@@ -393,6 +408,9 @@ exports.getVerifyEmail = (req, res, next) => {
  */
 exports.postReset = (req, res, next) => {
   const validationErrors = [];
+  req.body.password = String(req.body.password || '');
+  req.body.confirm = String(req.body.confirm || '');
+
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirm) validationErrors.push({ msg: 'Passwords do not match' });
   if (!validator.isHexadecimal(req.params.token)) validationErrors.push({ msg: 'Invalid Token.  Please retry.' });
@@ -490,6 +508,8 @@ exports.getForgot = (req, res) => {
  */
 exports.postForgot = (req, res, next) => {
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
 
   if (validationErrors.length) {
