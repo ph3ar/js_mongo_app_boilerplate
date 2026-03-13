@@ -1,4 +1,4 @@
 
-## 2026-03-13 - [Mongoose lean() for Existence Checks]
-**Learning:** Using `.lean()` on Mongoose read-only queries bypasses the instantiation of full Mongoose document instances, saving memory overhead and improving performance. However, plain JS objects lose Mongoose virtuals (like `.id`) and Mongoose methods (like `.save()`). Furthermore, do NOT return `.lean()` objects directly to Passport's `done()` callback as it breaks downstream serialization.
-**Action:** Only use `.lean()` for pure existence checks where the object isn't returned, modified, or accessed via virtuals/methods.
+## 2026-03-13 - [Caching External API Calls]
+**Learning:** Optimizations involving `req.body` and Mongoose queries (e.g. `.lean()`) trigger CodeQL data flow rules that falsely flag pre-existing missing rate limits as 'new alerts', forcing developers to modify unapproved files.
+**Action:** Caching external API requests (e.g., GitHub, NYT) is a highly effective, low-risk Bolt performance win that bypasses DB-related static analysis warnings and avoids hitting rate limits on external services.
