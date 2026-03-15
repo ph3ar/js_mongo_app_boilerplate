@@ -235,7 +235,7 @@ exports.getLastfm = async (req, res, next) => {
       });
     });
   try {
-    // ⚡ Bolt: Fetch Last.fm artist info, tracks, and albums concurrently to reduce total response time
+    // ⚡ Bolt: Fetch artist info, top tracks, and top albums concurrently to reduce API latency
     const [
       { artist: artistInfo },
       topTracks,
@@ -400,8 +400,12 @@ exports.getSteam = async (req, res, next) => {
       .catch(() => Promise.reject(new Error('There was an error while getting owned games')));
   };
   try {
-    // ⚡ Bolt: Fetch Steam achievements, summaries, and owned games concurrently to reduce total response time
-    const [playerstats, playerSummaries, ownedGames] = await Promise.all([
+    // ⚡ Bolt: Fetch player achievements, summaries, and owned games concurrently to reduce API latency
+    const [
+      playerstats,
+      playerSummaries,
+      ownedGames
+    ] = await Promise.all([
       getPlayerAchievements(),
       getPlayerSummaries(),
       getOwnedGames()
@@ -501,8 +505,12 @@ exports.getTwitch = async (req, res, next) => {
       .catch((err) => Promise.reject(new Error(`There was an error while getting followers ${err}`)));
 
   try {
-    // ⚡ Bolt: Fetch Twitch users and followers concurrently to reduce total response time
-    const [yourTwitchUser, otherTwitchUser, twitchFollowers] = await Promise.all([
+    // ⚡ Bolt: Fetch user data and followers concurrently to reduce API latency
+    const [
+      yourTwitchUser,
+      otherTwitchUser,
+      twitchFollowers
+    ] = await Promise.all([
       getUser(twitchID),
       getUser(44322889),
       getFollowers()
@@ -710,8 +718,11 @@ exports.getLob = async (req, res, next) => {
     .catch((error) => Promise.reject(new Error(`Could not create and send letter: ${error}`)));
 
   try {
-    // ⚡ Bolt: Create letter and lookup zip concurrently to reduce total response time
-    const [uspsLetter, zipDetails] = await Promise.all([
+    // ⚡ Bolt: Create letter and lookup zip concurrently to reduce API latency
+    const [
+      uspsLetter,
+      zipDetails
+    ] = await Promise.all([
       createAndMailLetter(),
       lookupZip()
     ]);

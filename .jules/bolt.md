@@ -1,3 +1,6 @@
+## 2026-03-09 - [Refactoring Sequential Awaits]
+**Learning:** Found multiple instances where independent API requests were `await`ed sequentially in controller methods (e.g., `getArtistInfo`, `getArtistTopTracks`, `getArtistTopAlbums` in `getLastfm`). This is an anti-pattern as it multiplies latency.
+**Action:** Use `await Promise.all([req1, req2, req3])` with array destructuring assignment to run these independent async operations concurrently, drastically improving request response time.
 ## 2024-03-12 - Use .lean() for Mongoose Read-only Operations
 **Learning:** Using Mongoose's `.lean()` method speeds up pure existence queries significantly because it skips full Mongoose document hydration. However, `.lean()` objects lose Mongoose virtuals (like `.id`) and instance methods. Returning a lean object directly to Passport's `done()` callback will break session serialization.
 **Action:** Always append `.lean().exec(...)` for pure existence checks where the object isn't returned or hydrated further. Ensure no downstream functions depend on the Mongoose document structure before applying this optimization.
