@@ -22,6 +22,11 @@ exports.postContact = (req, res) => {
   const validationErrors = [];
   let fromName;
   let fromEmail;
+
+  req.body.name = String(req.body.name || '');
+  req.body.email = String(req.body.email || '');
+  req.body.message = String(req.body.message || '');
+
   if (!req.user) {
     if (validator.isEmpty(req.body.name)) validationErrors.push({ msg: 'Please enter your name' });
     if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
