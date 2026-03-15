@@ -27,6 +27,8 @@ exports.getLogin = (req, res) => {
  * Sign in using email and password.
  */
 exports.postLogin = (req, res, next) => {
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   const validationErrors = [];
   req.body.email = String(req.body.email || '');
   req.body.password = String(req.body.password || '');
@@ -84,6 +86,8 @@ exports.getSignup = (req, res) => {
  * Create a new local account.
  */
 exports.postSignup = (req, res, next) => {
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   const validationErrors = [];
   req.body.email = String(req.body.email || '');
   req.body.password = String(req.body.password || '');
