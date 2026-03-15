@@ -24,11 +24,11 @@ block content
       form(role='form', method='POST')
         input(type='hidden', name='_csrf', value=_csrf)
         .form-group
-          label.control-label Number to text
-          input.form-control(type='text', name='number', autofocus)
+          label.control-label(for='number') Number to text
+          input.form-control(type='text', name='number', id='number', autofocus)
         .form-group
-          label.control-label Message
-          input.form-control(type='text', name='message')
+          label.control-label(for='message') Message
+          input.form-control(type='text', name='message', id='message')
         button.btn.btn-raised(type='submit')
           i.fas.fa-location-arrow.fa-sm
           | Send
