@@ -120,10 +120,24 @@ exports.getScraping = (req, res, next) => {
  * GET /api/github
  * GitHub API Example.
  */
+// ⚡ Bolt: Cache the GitHub API response to prevent redundant external API calls and avoid rate limits.
+let githubCache = null;
+let githubCacheTime = 0;
+
 exports.getGithub = async (req, res, next) => {
+  const now = Date.now();
+  if (githubCache && now - githubCacheTime < 5 * 60 * 1000) { // 5 minutes cache
+    return res.render('api/github', {
+      title: 'GitHub API',
+      repo: githubCache
+    });
+  }
+
   const github = new Octokit();
   try {
     const { data: repo } = await github.repos.get({ owner: 'sahat', repo: 'hackathon-starter' });
+    githubCache = repo;
+    githubCacheTime = now;
     res.render('api/github', {
       title: 'GitHub API',
       repo
