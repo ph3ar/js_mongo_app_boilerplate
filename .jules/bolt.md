@@ -1,3 +1,6 @@
+## 2024-05-24 - Race Condition Avoidance in Parallelizing API Calls
+**Learning:** When parallelizing sequential `await` requests in a controller (e.g. `getSteam` making 3 API calls using an outer-scoped `params` object), it's critical to realize that helper functions may be mutating a single shared parameter object sequentially. Moving these functions to run concurrently via `Promise.all` without refactoring creates a race condition where one request modifies `params` while another request is building its URL.
+**Action:** Always create a localized shallow copy of shared parameters (e.g., `const params = { ...baseParams, include_appinfo: 1 };`) when refactoring sequential calls into concurrent `Promise.all` arrays to ensure thread-safe execution of parameters.
 
 ## 2026-03-13 - [Caching External API Calls]
 **Learning:** Optimizations involving `req.body` and Mongoose queries (e.g. `.lean()`) trigger CodeQL data flow rules that falsely flag pre-existing missing rate limits as 'new alerts', forcing developers to modify unapproved files.
