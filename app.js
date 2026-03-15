@@ -116,6 +116,14 @@ app.use((req, res, next) => {
     req.session.returnTo = (req.originalUrl || '').match(/^\/[^\/\\].*/) ?
       req.originalUrl : '/';
   }
+
+  // Prevent open redirect
+  const { returnTo } = req.session;
+  if (returnTo && returnTo !== '/') {
+    if (!returnTo.match(/^\/[^\/]/)) {
+      req.session.returnTo = '/';
+    }
+  }
   next();
 });
 app.use('/', express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
