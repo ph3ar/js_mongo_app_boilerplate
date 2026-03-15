@@ -268,9 +268,12 @@ exports.getReset = (req, res, next) => {
     return res.redirect('/forgot');
   }
 
+  // Use .lean() for read-only query optimization since we only check for existence
+  // Note: plain JS objects lose Mongoose virtuals like .id
   User
-    .findOne({ passwordResetToken: req.params.token })
+    .findOne({ passwordResetToken: String(req.params.token) })
     .where('passwordResetExpires').gt(Date.now())
+    .lean()
     .exec((err, user) => {
       if (err) { return next(err); }
       if (!user) {
