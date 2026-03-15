@@ -155,7 +155,10 @@ passport.use(new FacebookStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile._json.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt Performance Optimization:
+      // Using .select('_id').lean() for pure existence checks reduces database payload size
+      // and completely bypasses Mongoose document hydration. This minimizes memory overhead.
+      User.findOne({ email: profile._json.email }).select('_id').lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Facebook manually from Account Settings.' });
@@ -215,7 +218,10 @@ passport.use(new GitHubStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile._json.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt Performance Optimization:
+      // Using .select('_id').lean() for pure existence checks reduces database payload size
+      // and completely bypasses Mongoose document hydration. This minimizes memory overhead.
+      User.findOne({ email: profile._json.email }).select('_id').lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with GitHub manually from Account Settings.' });
@@ -333,7 +339,10 @@ const googleStrategyConfig = new GoogleStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+      // ⚡ Bolt Performance Optimization:
+      // Using .select('_id').lean() for pure existence checks reduces database payload size
+      // and completely bypasses Mongoose document hydration. This minimizes memory overhead.
+      User.findOne({ email: profile.emails[0].value }).select('_id').lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Google manually from Account Settings.' });
@@ -399,7 +408,10 @@ passport.use(new LinkedInStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+      // ⚡ Bolt Performance Optimization:
+      // Using .select('_id').lean() for pure existence checks reduces database payload size
+      // and completely bypasses Mongoose document hydration. This minimizes memory overhead.
+      User.findOne({ email: profile.emails[0].value }).select('_id').lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with LinkedIn manually from Account Settings.' });
@@ -515,7 +527,10 @@ const twitchStrategyConfig = new TwitchStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt Performance Optimization:
+      // Using .select('_id').lean() for pure existence checks reduces database payload size
+      // and completely bypasses Mongoose document hydration. This minimizes memory overhead.
+      User.findOne({ email: profile.email }).select('_id').lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Twtich manually from Account Settings.' });

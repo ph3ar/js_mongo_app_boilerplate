@@ -1,3 +1,7 @@
+
+## 2024-05-15 - [Database Existence Check Optimization]
+**Learning:** Using `User.findOne(...)` without modifiers fetches the entire Mongoose document and builds an object. When only checking for a document's existence (where the object itself is not returned or manipulated), this introduces unnecessary performance overhead.
+**Action:** Use `.select('_id').lean().exec(...)` or `.exists(...)` (when Promise/callback structure allows) for existence checks to avoid full document overhead and bypass Mongoose schema hydration. Be careful NOT to return `.lean()` objects directly to Passport's `done()` callback.
 ## 2026-03-09 - [Refactoring Sequential Awaits]
 **Learning:** Found multiple instances where independent API requests were `await`ed sequentially in controller methods (e.g., `getArtistInfo`, `getArtistTopTracks`, `getArtistTopAlbums` in `getLastfm`). This is an anti-pattern as it multiplies latency.
 **Action:** Use `await Promise.all([req1, req2, req3])` with array destructuring assignment to run these independent async operations concurrently, drastically improving request response time.
