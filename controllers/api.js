@@ -125,6 +125,14 @@ let githubCacheTime = 0;
 const GITHUB_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 exports.getGithub = async (req, res, next) => {
+  const now = Date.now();
+  if (githubCache && now - githubCacheTime < 5 * 60 * 1000) { // 5 minutes cache
+    return res.render('api/github', {
+      title: 'GitHub API',
+      repo: githubCache
+    });
+  }
+
   const github = new Octokit();
   try {
     // ⚡ Bolt: Cache GitHub API requests to prevent rate limiting and speed up response times
