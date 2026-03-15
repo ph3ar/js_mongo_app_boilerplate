@@ -35,6 +35,15 @@ block content
 
         .form-check.form-check-inline
           input(type='radio', class='form-check-input' checked=user.profile.gender == 'other', name='gender', id='gender-other', value='other', data-toggle='radio')
+          input(type='radio', class='form-check-input', id='gender-male', checked=user.profile.gender == 'male', name='gender', value='male', data-toggle='radio')
+          label.form-check-label(for='gender-male') Male
+
+        .form-check.form-check-inline
+          input(type='radio', class='form-check-input', id='gender-female', checked=user.profile.gender == 'female', name='gender', value='female', data-toggle='radio')
+          label.form-check-label(for='gender-female') Female
+
+        .form-check.form-check-inline
+          input(type='radio', class='form-check-input', id='gender-other', checked=user.profile.gender == 'other', name='gender', value='other', data-toggle='radio')
           label.form-check-label(for='gender-other') Other
     .form-group.row
       label.col-md-3.col-form-label.font-weight-bold.text-right(for='location') Location
