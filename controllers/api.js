@@ -120,10 +120,34 @@ exports.getScraping = (req, res, next) => {
  * GET /api/github
  * GitHub API Example.
  */
+let githubCache = null;
+let githubCacheTime = 0;
+const GITHUB_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 exports.getGithub = async (req, res, next) => {
+  const now = Date.now();
+  if (githubCache && now - githubCacheTime < 5 * 60 * 1000) { // 5 minutes cache
+    return res.render('api/github', {
+      title: 'GitHub API',
+      repo: githubCache
+    });
+  }
+
   const github = new Octokit();
   try {
+    // ⚡ Bolt: Cache GitHub API requests to prevent rate limiting and speed up response times
+    if (githubCache && Date.now() - githubCacheTime < GITHUB_CACHE_DURATION) {
+      return res.render('api/github', {
+        title: 'GitHub API',
+        repo: githubCache
+      });
+    }
+
     const { data: repo } = await github.repos.get({ owner: 'sahat', repo: 'hackathon-starter' });
+
+    githubCache = repo;
+    githubCacheTime = Date.now();
+
     res.render('api/github', {
       title: 'GitHub API',
       repo
@@ -317,7 +341,7 @@ exports.postTwitter = (req, res, next) => {
  */
 exports.getSteam = async (req, res, next) => {
   const steamId = req.user.steam;
-  const params = { l: 'english', steamid: steamId, key: process.env.STEAM_KEY };
+  const baseParams = { l: 'english', steamid: steamId, key: process.env.STEAM_KEY };
 
   // makes a url with search query
   const makeURL = (baseURL, params) => {
@@ -328,6 +352,7 @@ exports.getSteam = async (req, res, next) => {
   };
     // get the list of the recently played games, pick the most recent one and get its achievements
   const getPlayerAchievements = () => {
+    const params = { ...baseParams };
     const recentGamesURL = makeURL('http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/', params);
     return axios.get(recentGamesURL)
       .then(({ data }) => {
@@ -361,15 +386,14 @@ exports.getSteam = async (req, res, next) => {
       });
   };
   const getPlayerSummaries = () => {
-    params.steamids = steamId;
+    const params = { ...baseParams, steamids: steamId };
     const url = makeURL('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/', params);
     return axios.get(url)
       .then(({ data }) => data)
       .catch(() => Promise.reject(new Error('There was an error while getting player summary')));
   };
   const getOwnedGames = () => {
-    params.include_appinfo = 1;
-    params.include_played_free_games = 1;
+    const params = { ...baseParams, include_appinfo: 1, include_played_free_games: 1 };
     const url = makeURL('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/', params);
     return axios.get(url)
       .then(({ data }) => data)
