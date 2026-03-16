@@ -16,6 +16,7 @@ const flash = require('express-flash');
 const path = require('path');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const helmet = require('helmet');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
@@ -85,6 +86,7 @@ app.use(session({
     autoReconnect: true,
   })
 }));
+app.use(helmet());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
