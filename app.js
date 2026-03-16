@@ -139,7 +139,15 @@ app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawes
 const signupRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window
   max: 10, // start blocking after 10 requests
-  message: 'Too many accounts created from this IP, please try again after an hour'
+  message:
+    'Too many accounts created from this IP, please try again after an hour',
+});
+
+const loginRateLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 minute window
+  max: 10, // start blocking after 10 requests
+  message:
+    'Too many login attempts from this IP, please try again after 30 minutes',
 });
 
 /**
@@ -147,7 +155,7 @@ const signupRateLimiter = rateLimit({
  */
 app.get('/', homeController.index);
 app.get('/login', userController.getLogin);
-app.post('/login', userController.postLogin);
+app.post('/login', loginRateLimiter, userController.postLogin);
 app.get('/logout', userController.logout);
 app.get('/forgot', userController.getForgot);
 app.post('/forgot', userController.postForgot);
