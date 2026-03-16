@@ -100,7 +100,18 @@ exports.getFacebook = (req, res, next) => {
  * GET /api/scraping
  * Web scraping example using Cheerio library.
  */
+let scrapingCache = null;
+let scrapingCacheTime = 0;
+
 exports.getScraping = (req, res, next) => {
+  // ⚡ Bolt: Cache Hacker News scraping requests to speed up response times and avoid external rate limiting
+  if (scrapingCache && Date.now() - scrapingCacheTime < 5 * 60 * 1000) { // 5 minutes cache
+    return res.render('api/scraping', {
+      title: 'Web Scraping',
+      links: scrapingCache
+    });
+  }
+
   axios.get('https://news.ycombinator.com/')
     .then((response) => {
       const $ = cheerio.load(response.data);
@@ -108,6 +119,10 @@ exports.getScraping = (req, res, next) => {
       $('.title a[href^="http"], a[href^="https"]').slice(1).each((index, element) => {
         links.push($(element));
       });
+
+      scrapingCache = links;
+      scrapingCacheTime = Date.now();
+
       res.render('api/scraping', {
         title: 'Web Scraping',
         links
