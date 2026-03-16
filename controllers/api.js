@@ -175,11 +175,25 @@ exports.getQuickbooks = (req, res) => {
  * GET /api/nyt
  * New York Times API example.
  */
+let nytCache = null;
+let nytCacheTime = 0;
+const NYT_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 exports.getNewYorkTimes = (req, res, next) => {
+  // ⚡ Bolt: Cache NYT API requests to speed up response times and avoid external rate limiting
+  if (nytCache && Date.now() - nytCacheTime < NYT_CACHE_DURATION) {
+    return res.render('api/nyt', {
+      title: 'New York Times API',
+      books: nytCache
+    });
+  }
+
   const apiKey = process.env.NYT_KEY;
   axios.get(`http://api.nytimes.com/svc/books/v2/lists?list-name=young-adult&api-key=${apiKey}`)
     .then((response) => {
       const books = response.data.results;
+      nytCache = books;
+      nytCacheTime = Date.now();
       res.render('api/nyt', {
         title: 'New York Times API',
         books
