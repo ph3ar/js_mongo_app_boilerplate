@@ -13,3 +13,6 @@
 ## 2024-05-24 - Pug Template Radio Button Labels
 **Learning:** Pug templates in this repository using Bootstrap 4 form-checks often have radio inputs without explicit `id`s, and labels without `for` attributes. This breaks the link between label and input for screen readers and prevents clickability on the label.
 **Action:** When adding or maintaining radio/checkbox inputs in `.pug` files (especially `views/account/profile.pug`), always explicitly map `id` on the input to `for` on the corresponding label to ensure screen reader accessibility.
+## 2024-05-18 - Form Input Accessibility
+**Learning:** Found that custom form blocks or copy-pasted blocks in pug templates sometimes do not have explicitly added and mapped `for` and `id` attributes on inputs and labels, especially in older API views like Twilio API. This impacts screen reader accessibility.
+**Action:** When working with Pug templates and form groups in this repository, explicitly add and map `for` and `id` attributes on all inputs (especially custom inputs) to ensure screen reader accessibility. Check that copy-pasted form blocks do not retain stale `for` attributes.
