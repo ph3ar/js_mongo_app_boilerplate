@@ -1,6 +1,5 @@
 if messages.errors
   .alert.alert-danger.fade.show
-    button.close(type='button', data-dismiss='alert', aria-label='Close alert')
     button.close(type='button', data-dismiss='alert', aria-label='Close')
       i.far.fa-times-circle
       i.far.fa-times-circle(aria-hidden='true')
@@ -8,7 +7,6 @@ if messages.errors
       div= error.msg
 if messages.info
   .alert.alert-info.fade.show
-    button.close(type='button', data-dismiss='alert', aria-label='Close alert')
     button.close(type='button', data-dismiss='alert', aria-label='Close')
       i.far.fa-times-circle
       i.far.fa-times-circle(aria-hidden='true')
@@ -16,7 +14,6 @@ if messages.info
       div= info.msg
 if messages.success
   .alert.alert-success.fade.show
-    button.close(type='button', data-dismiss='alert', aria-label='Close alert')
     button.close(type='button', data-dismiss='alert', aria-label='Close')
       i.far.fa-times-circle
       i.far.fa-times-circle(aria-hidden='true')
