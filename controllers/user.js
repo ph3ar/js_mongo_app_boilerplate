@@ -27,7 +27,11 @@ exports.getLogin = (req, res) => {
  * Sign in using email and password.
  */
 exports.postLogin = (req, res, next) => {
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
   if (validator.isEmpty(req.body.password)) validationErrors.push({ msg: 'Password cannot be blank.' });
 
@@ -82,7 +86,12 @@ exports.getSignup = (req, res) => {
  * Create a new local account.
  */
 exports.postSignup = (req, res, next) => {
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
+  req.body.confirmPassword = String(req.body.confirmPassword || '');
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match' });
@@ -98,7 +107,10 @@ exports.postSignup = (req, res, next) => {
     password: req.body.password
   });
 
-  User.findOne({ email: req.body.email }, (err, existingUser) => {
+  // ⚡ Bolt Performance Optimization:
+  // Using .select('_id').lean() for pure existence checks reduces database payload size
+  // and completely bypasses Mongoose document hydration. This minimizes memory overhead.
+  User.findOne({ email: String(req.body.email) }).select('_id').lean().exec((err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
@@ -132,6 +144,13 @@ exports.getAccount = (req, res) => {
  */
 exports.postUpdateProfile = (req, res, next) => {
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.name = String(req.body.name || '');
+  req.body.gender = String(req.body.gender || '');
+  req.body.steamid = String(req.body.steamid || '');
+  req.body.location = String(req.body.location || '');
+  req.body.website = String(req.body.website || '');
+
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
 
   if (validationErrors.length) {
@@ -169,6 +188,9 @@ exports.postUpdateProfile = (req, res, next) => {
  */
 exports.postUpdatePassword = (req, res, next) => {
   const validationErrors = [];
+  req.body.password = String(req.body.password || '');
+  req.body.confirmPassword = String(req.body.confirmPassword || '');
+
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match' });
 
@@ -249,9 +271,12 @@ exports.getReset = (req, res, next) => {
     return res.redirect('/forgot');
   }
 
+  // Use .lean() for read-only query optimization since we only check for existence
+  // Note: plain JS objects lose Mongoose virtuals like .id
   User
-    .findOne({ passwordResetToken: req.params.token })
+    .findOne({ passwordResetToken: String(req.params.token) })
     .where('passwordResetExpires').gt(Date.now())
+    .lean()
     .exec((err, user) => {
       if (err) { return next(err); }
       if (!user) {
@@ -393,6 +418,9 @@ exports.getVerifyEmail = (req, res, next) => {
  */
 exports.postReset = (req, res, next) => {
   const validationErrors = [];
+  req.body.password = String(req.body.password || '');
+  req.body.confirm = String(req.body.confirm || '');
+
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirm) validationErrors.push({ msg: 'Passwords do not match' });
   if (!validator.isHexadecimal(req.params.token)) validationErrors.push({ msg: 'Invalid Token.  Please retry.' });
@@ -490,6 +518,8 @@ exports.getForgot = (req, res) => {
  */
 exports.postForgot = (req, res, next) => {
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
 
   if (validationErrors.length) {
