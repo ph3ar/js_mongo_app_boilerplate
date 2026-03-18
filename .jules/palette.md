@@ -16,3 +16,7 @@
 ## 2024-05-18 - Form Input Accessibility
 **Learning:** Found that custom form blocks or copy-pasted blocks in pug templates sometimes do not have explicitly added and mapped `for` and `id` attributes on inputs and labels, especially in older API views like Twilio API. This impacts screen reader accessibility.
 **Action:** When working with Pug templates and form groups in this repository, explicitly add and map `for` and `id` attributes on all inputs (especially custom inputs) to ensure screen reader accessibility. Check that copy-pasted form blocks do not retain stale `for` attributes.
+
+## 2024-05-24 - Flash Message Accessibility Roles
+**Learning:** Dynamic flash message containers (like `.alert`) often visually convey information without automatically notifying screen readers. Using `role='alert'` ensures screen readers announce the contents of the container immediately upon display. Additionally, when using icon-only close buttons, ensure there is only a single decorative icon and apply `aria-hidden='true'` to prevent redundant announcements.
+**Action:** Always add `role='alert'` to flash message or toast containers and clean up duplicate, visually identical, decorative icons inside buttons for improved accessibility.
