@@ -19,3 +19,7 @@
 ## 2026-03-17 - Added role='alert' to Flash Messages
 **Learning:** Found an accessibility issue pattern where flash messages visually appeared but weren't automatically announced by screen readers due to missing ARIA roles. Additionally, duplicate close icons (one missing `aria-hidden`) caused redundant reading.
 **Action:** Always add `role='alert'` to flash message containers and verify that decorative icons inside icon-only buttons have a single instance with `aria-hidden='true'`.
+
+## 2024-05-24 - Flash Message Accessibility Roles
+**Learning:** Dynamic flash message containers (like `.alert`) often visually convey information without automatically notifying screen readers. Using `role='alert'` ensures screen readers announce the contents of the container immediately upon display. Additionally, when using icon-only close buttons, ensure there is only a single decorative icon and apply `aria-hidden='true'` to prevent redundant announcements.
+**Action:** Always add `role='alert'` to flash message or toast containers and clean up duplicate, visually identical, decorative icons inside buttons for improved accessibility.
