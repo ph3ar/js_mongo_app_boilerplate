@@ -587,7 +587,20 @@ exports.postClockwork = (req, res, next) => {
  * GET /api/chart
  * Chart example.
  */
+let chartCache = null;
+let chartCacheTime = 0;
+const CHART_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 exports.getChart = async (req, res, next) => {
+  // ⚡ Bolt: Cache external Alpha Vantage API requests to speed up response times and avoid rate limits
+  if (chartCache && Date.now() - chartCacheTime < CHART_CACHE_DURATION) {
+    return res.render('api/chart', {
+      title: 'Chart',
+      dates: chartCache.dates,
+      closing: chartCache.closing,
+    });
+  }
+
   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&outputsize=compact&apikey=${process.env.ALPHA_VANTAGE_KEY}`;
   axios.get(url)
     .then((response) => {
@@ -604,10 +617,14 @@ exports.getChart = async (req, res, next) => {
       closing.reverse();
       dates = JSON.stringify(dates);
       closing = JSON.stringify(closing);
+
+      chartCache = { dates, closing };
+      chartCacheTime = Date.now();
+
       res.render('api/chart', {
         title: 'Chart',
         dates,
-        closing
+        closing,
       });
     }).catch((err) => {
       next(err);
