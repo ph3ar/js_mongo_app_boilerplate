@@ -150,6 +150,13 @@ const loginRateLimiter = rateLimit({
     'Too many login attempts from this IP, please try again after 30 minutes',
 });
 
+const forgotRateLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 minute window
+  max: 10, // start blocking after 10 requests
+  message:
+    'Too many password reset attempts from this IP, please try again after 30 minutes',
+});
+
 /**
  * Primary app routes.
  */
@@ -158,7 +165,7 @@ app.get('/login', userController.getLogin);
 app.post('/login', loginRateLimiter, userController.postLogin);
 app.get('/logout', userController.logout);
 app.get('/forgot', userController.getForgot);
-app.post('/forgot', userController.postForgot);
+app.post('/forgot', forgotRateLimiter, userController.postForgot);
 app.get('/reset/:token', userController.getReset);
 app.post('/reset/:token', userController.postReset);
 app.get('/signup', userController.getSignup);
