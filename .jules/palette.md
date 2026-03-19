@@ -23,3 +23,6 @@
 ## 2024-05-24 - Flash Message Accessibility Roles
 **Learning:** Dynamic flash message containers (like `.alert`) often visually convey information without automatically notifying screen readers. Using `role='alert'` ensures screen readers announce the contents of the container immediately upon display. Additionally, when using icon-only close buttons, ensure there is only a single decorative icon and apply `aria-hidden='true'` to prevent redundant announcements.
 **Action:** Always add `role='alert'` to flash message or toast containers and clean up duplicate, visually identical, decorative icons inside buttons for improved accessibility.
+## 2026-03-20 - Missing alt attributes on large image grids
+**Learning:** Found an accessibility issue pattern where large collections of images (like the 24 API Sandbox logos in views/api/index.pug) consistently missed `alt` attributes, likely due to copy-pasting the initial grid cell structure.
+**Action:** Always verify `alt` attributes are present when creating or modifying grids or lists of images, ensuring each image has descriptive alternative text, even if the text immediately follows the image visually.
