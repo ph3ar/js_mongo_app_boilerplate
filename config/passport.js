@@ -69,8 +69,8 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
  * Sign in with Snapchat.
  */
 passport.use(new SnapchatStrategy({
-  clientID: process.env.SNAPCHAT_ID,
-  clientSecret: process.env.SNAPCHAT_SECRET,
+  clientID: process.env.SNAPCHAT_ID || '123' || '123',
+  clientSecret: process.env.SNAPCHAT_SECRET || '123' || '123',
   callbackURL: '/auth/snapchat/callback',
   profileFields: ['id', 'displayName', 'bitmoji'],
   scope: ['user.display_name', 'user.bitmoji.avatar'],
@@ -122,8 +122,8 @@ passport.use(new SnapchatStrategy({
  * Sign in with Facebook.
  */
 passport.use(new FacebookStrategy({
-  clientID: process.env.FACEBOOK_ID,
-  clientSecret: process.env.FACEBOOK_SECRET,
+  clientID: process.env.FACEBOOK_ID || '123',
+  clientSecret: process.env.FACEBOOK_SECRET || '123',
   callbackURL: `${process.env.BASE_URL}/auth/facebook/callback`,
   profileFields: ['name', 'email', 'link', 'locale', 'timezone', 'gender'],
   passReqToCallback: true
@@ -182,8 +182,8 @@ passport.use(new FacebookStrategy({
  * Sign in with GitHub.
  */
 passport.use(new GitHubStrategy({
-  clientID: process.env.GITHUB_ID,
-  clientSecret: process.env.GITHUB_SECRET,
+  clientID: process.env.GITHUB_ID || '123',
+  clientSecret: process.env.GITHUB_SECRET || '123',
   callbackURL: `${process.env.BASE_URL}/auth/github/callback`,
   passReqToCallback: true,
   scope: ['user:email']
@@ -242,8 +242,8 @@ passport.use(new GitHubStrategy({
  * Sign in with Twitter.
  */
 passport.use(new TwitterStrategy({
-  consumerKey: process.env.TWITTER_KEY,
-  consumerSecret: process.env.TWITTER_SECRET,
+  consumerKey: process.env.TWITTER_KEY || '123',
+  consumerSecret: process.env.TWITTER_SECRET || '123',
   callbackURL: `${process.env.BASE_URL}/auth/twitter/callback`,
   passReqToCallback: true
 }, (req, accessToken, tokenSecret, profile, done) => {
@@ -296,8 +296,8 @@ passport.use(new TwitterStrategy({
  * Sign in with Google.
  */
 const googleStrategyConfig = new GoogleStrategy({
-  clientID: process.env.GOOGLE_ID,
-  clientSecret: process.env.GOOGLE_SECRET,
+  clientID: process.env.GOOGLE_ID || '123',
+  clientSecret: process.env.GOOGLE_SECRET || '123',
   callbackURL: '/auth/google/callback',
   passReqToCallback: true
 }, (req, accessToken, refreshToken, params, profile, done) => {
@@ -366,8 +366,8 @@ refresh.use('google', googleStrategyConfig);
  * Sign in with LinkedIn.
  */
 passport.use(new LinkedInStrategy({
-  clientID: process.env.LINKEDIN_ID,
-  clientSecret: process.env.LINKEDIN_SECRET,
+  clientID: process.env.LINKEDIN_ID || '123',
+  clientSecret: process.env.LINKEDIN_SECRET || '123',
   callbackURL: `${process.env.BASE_URL}/auth/linkedin/callback`,
   scope: ['r_liteprofile', 'r_emailaddress'],
   passReqToCallback: true
@@ -424,8 +424,8 @@ passport.use(new LinkedInStrategy({
  * Sign in with Instagram.
  */
 passport.use(new InstagramStrategy({
-  clientID: process.env.INSTAGRAM_ID,
-  clientSecret: process.env.INSTAGRAM_SECRET,
+  clientID: process.env.INSTAGRAM_ID || '123',
+  clientSecret: process.env.INSTAGRAM_SECRET || '123',
   callbackURL: '/auth/instagram/callback',
   passReqToCallback: true
 }, (req, accessToken, refreshToken, profile, done) => {
@@ -477,8 +477,8 @@ passport.use(new InstagramStrategy({
  * Twitch API OAuth.
  */
 const twitchStrategyConfig = new TwitchStrategy({
-  clientID: process.env.TWITCH_CLIENT_ID,
-  clientSecret: process.env.TWITCH_CLIENT_SECRET,
+  clientID: process.env.TWITCH_CLIENT_ID || '123',
+  clientSecret: process.env.TWITCH_CLIENT_SECRET || '123',
   callbackURL: `${process.env.BASE_URL}/auth/twitch/callback`,
   scope: ['user_read', 'chat:read', 'chat:edit', 'whispers:read', 'whispers:edit', 'user:read:email'],
   passReqToCallback: true
@@ -551,8 +551,8 @@ passport.use('tumblr', new OAuthStrategy({
   requestTokenURL: 'https://www.tumblr.com/oauth/request_token',
   accessTokenURL: 'https://www.tumblr.com/oauth/access_token',
   userAuthorizationURL: 'https://www.tumblr.com/oauth/authorize',
-  consumerKey: process.env.TUMBLR_KEY,
-  consumerSecret: process.env.TUMBLR_SECRET,
+  consumerKey: process.env.TUMBLR_KEY || '123',
+  consumerSecret: process.env.TUMBLR_SECRET || '123',
   callbackURL: '/auth/tumblr/callback',
   passReqToCallback: true
 },
@@ -572,8 +572,8 @@ passport.use('tumblr', new OAuthStrategy({
 passport.use('foursquare', new OAuth2Strategy({
   authorizationURL: 'https://foursquare.com/oauth2/authorize',
   tokenURL: 'https://foursquare.com/oauth2/access_token',
-  clientID: process.env.FOURSQUARE_ID,
-  clientSecret: process.env.FOURSQUARE_SECRET,
+  clientID: process.env.FOURSQUARE_ID || '123',
+  clientSecret: process.env.FOURSQUARE_SECRET || '123',
   callbackURL: process.env.FOURSQUARE_REDIRECT_URL,
   passReqToCallback: true
 },
@@ -653,8 +653,8 @@ passport.use(new OpenIDStrategy({
 passport.use('pinterest', new OAuth2Strategy({
   authorizationURL: 'https://api.pinterest.com/oauth/',
   tokenURL: 'https://api.pinterest.com/v1/oauth/token',
-  clientID: process.env.PINTEREST_ID,
-  clientSecret: process.env.PINTEREST_SECRET,
+  clientID: process.env.PINTEREST_ID || '123',
+  clientSecret: process.env.PINTEREST_SECRET || '123',
   callbackURL: process.env.PINTEREST_REDIRECT_URL,
   passReqToCallback: true
 },
@@ -674,8 +674,8 @@ passport.use('pinterest', new OAuth2Strategy({
 const quickbooksStrategyConfig = new OAuth2Strategy({
   authorizationURL: 'https://appcenter.intuit.com/connect/oauth2',
   tokenURL: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
-  clientID: process.env.QUICKBOOKS_CLIENT_ID,
-  clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET,
+  clientID: process.env.QUICKBOOKS_CLIENT_ID || '123',
+  clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET || '123',
   callbackURL: `${process.env.BASE_URL}/auth/quickbooks/callback`,
   passReqToCallback: true
 },

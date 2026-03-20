@@ -73,7 +73,33 @@ describe('GET /api/scraping', () => {
   });
 });
 
+const nock = require('nock');
+
 describe('GET /api/lob', () => {
+  before(() => {
+    nock('https://api.lob.com')
+      .get(/v1\/us_zip_lookups.*/)
+      .reply(200, {
+        zip_code: '94107',
+        cities: [
+          {
+            city: 'SAN FRANCISCO',
+            state: 'CA'
+          }
+        ]
+      })
+      .post('/v1/letters')
+      .reply(200, {
+        id: 'ltr_123',
+        url: 'https://lob.com/letter',
+        expected_delivery_date: '2026-03-10'
+      });
+  });
+
+  after(() => {
+    nock.cleanAll();
+  });
+
   it('should return 200 OK', (done) => {
     request(app)
       .get('/api/lob')
