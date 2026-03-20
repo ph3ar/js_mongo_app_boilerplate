@@ -77,7 +77,7 @@ passport.use(new SnapchatStrategy({
   passReqToCallback: true
 }, (req, accessToken, refreshToken, profile, done) => {
   if (req.user) {
-    User.findOne({ snapchat: profile.id }, (err, existingUser) => {
+    User.findOne({ snapchat: profile.id }).lean().exec((err, existingUser) => {
       if (err) { return done(err); }
       if (existingUser) {
         req.flash('errors', { msg: 'There is already a Snapchat account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
@@ -129,7 +129,7 @@ passport.use(new FacebookStrategy({
   passReqToCallback: true
 }, (req, accessToken, refreshToken, profile, done) => {
   if (req.user) {
-    User.findOne({ facebook: profile.id }, (err, existingUser) => {
+    User.findOne({ facebook: profile.id }).lean().exec((err, existingUser) => {
       if (err) { return done(err); }
       if (existingUser) {
         req.flash('errors', { msg: 'There is already a Facebook account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
@@ -155,7 +155,8 @@ passport.use(new FacebookStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile._json.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile._json.email }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Facebook manually from Account Settings.' });
@@ -189,7 +190,7 @@ passport.use(new GitHubStrategy({
   scope: ['user:email']
 }, (req, accessToken, refreshToken, profile, done) => {
   if (req.user) {
-    User.findOne({ github: profile.id }, (err, existingUser) => {
+    User.findOne({ github: profile.id }).lean().exec((err, existingUser) => {
       if (existingUser) {
         req.flash('errors', { msg: 'There is already a GitHub account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
         done(err);
@@ -215,7 +216,8 @@ passport.use(new GitHubStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile._json.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile._json.email }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with GitHub manually from Account Settings.' });
@@ -248,7 +250,7 @@ passport.use(new TwitterStrategy({
   passReqToCallback: true
 }, (req, accessToken, tokenSecret, profile, done) => {
   if (req.user) {
-    User.findOne({ twitter: profile.id }, (err, existingUser) => {
+    User.findOne({ twitter: profile.id }).lean().exec((err, existingUser) => {
       if (err) { return done(err); }
       if (existingUser) {
         req.flash('errors', { msg: 'There is already a Twitter account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
@@ -302,9 +304,9 @@ const googleStrategyConfig = new GoogleStrategy({
   passReqToCallback: true
 }, (req, accessToken, refreshToken, params, profile, done) => {
   if (req.user) {
-    User.findOne({ google: profile.id }, (err, existingUser) => {
+    User.findOne({ google: profile.id }).lean().exec((err, existingUser) => {
       if (err) { return done(err); }
-      if (existingUser && (existingUser.id !== req.user.id)) {
+      if (existingUser && (existingUser._id.toString() !== req.user.id)) {
         req.flash('errors', { msg: 'There is already a Google account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
         done(err);
       } else {
@@ -333,7 +335,8 @@ const googleStrategyConfig = new GoogleStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile.emails[0].value }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Google manually from Account Settings.' });
@@ -373,7 +376,7 @@ passport.use(new LinkedInStrategy({
   passReqToCallback: true
 }, (req, accessToken, refreshToken, profile, done) => {
   if (req.user) {
-    User.findOne({ linkedin: profile.id }, (err, existingUser) => {
+    User.findOne({ linkedin: profile.id }).lean().exec((err, existingUser) => {
       if (err) { return done(err); }
       if (existingUser) {
         req.flash('errors', { msg: 'There is already a LinkedIn account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
@@ -399,7 +402,8 @@ passport.use(new LinkedInStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile.emails[0].value }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with LinkedIn manually from Account Settings.' });
@@ -430,7 +434,7 @@ passport.use(new InstagramStrategy({
   passReqToCallback: true
 }, (req, accessToken, refreshToken, profile, done) => {
   if (req.user) {
-    User.findOne({ instagram: profile.id }, (err, existingUser) => {
+    User.findOne({ instagram: profile.id }).lean().exec((err, existingUser) => {
       if (err) { return done(err); }
       if (existingUser) {
         req.flash('errors', { msg: 'There is already an Instagram account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
@@ -484,9 +488,9 @@ const twitchStrategyConfig = new TwitchStrategy({
   passReqToCallback: true
 }, (req, accessToken, refreshToken, params, profile, done) => {
   if (req.user) {
-    User.findOne({ twitch: profile.id }, (err, existingUser) => {
+    User.findOne({ twitch: profile.id }).lean().exec((err, existingUser) => {
       if (err) { return done(err); }
-      if (existingUser && (existingUser.id !== req.user.id)) {
+      if (existingUser && (existingUser._id.toString() !== req.user.id)) {
         req.flash('errors', { msg: 'There is already a Twitch account that belongs to you. Sign in with that account or delete it, then link it with your current account.' });
         done(err);
       } else {
@@ -515,7 +519,8 @@ const twitchStrategyConfig = new TwitchStrategy({
       if (existingUser) {
         return done(null, existingUser);
       }
-      User.findOne({ email: profile.email }, (err, existingEmailUser) => {
+      // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+      User.findOne({ email: profile.email }).lean().exec((err, existingEmailUser) => {
         if (err) { return done(err); }
         if (existingEmailUser) {
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Twtich manually from Account Settings.' });
@@ -602,7 +607,7 @@ passport.use(new OpenIDStrategy({
   const profileURL = `http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.STEAM_KEY}&steamids=${steamId}`;
 
   if (req.user) {
-    User.findOne({ steam: steamId }, (err, existingUser) => {
+    User.findOne({ steam: steamId }).lean().exec((err, existingUser) => {
       if (err) { return done(err); }
       if (existingUser) {
         req.flash('errors', { msg: 'There is already an account associated with the SteamID. Sign in with that account or delete it, then link it with your current account.' });

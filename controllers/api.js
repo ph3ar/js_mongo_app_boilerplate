@@ -100,7 +100,18 @@ exports.getFacebook = (req, res, next) => {
  * GET /api/scraping
  * Web scraping example using Cheerio library.
  */
+let scrapingCache = null;
+let scrapingCacheTime = 0;
+
 exports.getScraping = (req, res, next) => {
+  // ⚡ Bolt: Cache Hacker News scraping requests to speed up response times and avoid external rate limiting
+  if (scrapingCache && Date.now() - scrapingCacheTime < 5 * 60 * 1000) { // 5 minutes cache
+    return res.render('api/scraping', {
+      title: 'Web Scraping',
+      links: scrapingCache
+    });
+  }
+
   axios.get('https://news.ycombinator.com/')
     .then((response) => {
       const $ = cheerio.load(response.data);
@@ -108,6 +119,10 @@ exports.getScraping = (req, res, next) => {
       $('.title a[href^="http"], a[href^="https"]').slice(1).each((index, element) => {
         links.push($(element));
       });
+
+      scrapingCache = links;
+      scrapingCacheTime = Date.now();
+
       res.render('api/scraping', {
         title: 'Web Scraping',
         links
@@ -120,10 +135,34 @@ exports.getScraping = (req, res, next) => {
  * GET /api/github
  * GitHub API Example.
  */
+let githubCache = null;
+let githubCacheTime = 0;
+const GITHUB_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 exports.getGithub = async (req, res, next) => {
+  const now = Date.now();
+  if (githubCache && now - githubCacheTime < 5 * 60 * 1000) { // 5 minutes cache
+    return res.render('api/github', {
+      title: 'GitHub API',
+      repo: githubCache
+    });
+  }
+
   const github = new Octokit();
   try {
+    // ⚡ Bolt: Cache GitHub API requests to prevent rate limiting and speed up response times
+    if (githubCache && Date.now() - githubCacheTime < GITHUB_CACHE_DURATION) {
+      return res.render('api/github', {
+        title: 'GitHub API',
+        repo: githubCache
+      });
+    }
+
     const { data: repo } = await github.repos.get({ owner: 'sahat', repo: 'hackathon-starter' });
+
+    githubCache = repo;
+    githubCacheTime = Date.now();
+
     res.render('api/github', {
       title: 'GitHub API',
       repo
@@ -151,11 +190,25 @@ exports.getQuickbooks = (req, res) => {
  * GET /api/nyt
  * New York Times API example.
  */
+let nytCache = null;
+let nytCacheTime = 0;
+const NYT_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 exports.getNewYorkTimes = (req, res, next) => {
+  // ⚡ Bolt: Cache NYT API requests to speed up response times and avoid external rate limiting
+  if (nytCache && Date.now() - nytCacheTime < NYT_CACHE_DURATION) {
+    return res.render('api/nyt', {
+      title: 'New York Times API',
+      books: nytCache
+    });
+  }
+
   const apiKey = process.env.NYT_KEY;
   axios.get(`http://api.nytimes.com/svc/books/v2/lists?list-name=young-adult&api-key=${apiKey}`)
     .then((response) => {
       const books = response.data.results;
+      nytCache = books;
+      nytCacheTime = Date.now();
       res.render('api/nyt', {
         title: 'New York Times API',
         books
@@ -171,7 +224,19 @@ exports.getNewYorkTimes = (req, res, next) => {
  * GET /api/lastfm
  * Last.fm API example.
  */
+let lastfmCache = null;
+let lastfmCacheTime = 0;
+const LASTFM_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 exports.getLastfm = async (req, res, next) => {
+  // ⚡ Bolt: Cache Last.fm API requests for static artist data to reduce external API calls and latency
+  if (lastfmCache && Date.now() - lastfmCacheTime < LASTFM_CACHE_DURATION) {
+    return res.render('api/lastfm', {
+      title: 'Last.fm API',
+      artist: lastfmCache
+    });
+  }
+
   const lastfm = new LastFmNode({
     api_key: process.env.LASTFM_KEY,
     secret: process.env.LASTFM_SECRET
@@ -211,9 +276,16 @@ exports.getLastfm = async (req, res, next) => {
       });
     });
   try {
-    const { artist: artistInfo } = await getArtistInfo();
-    const topTracks = await getArtistTopTracks();
-    const topAlbums = await getArtistTopAlbums();
+    // ⚡ Bolt: Fetch artist info, top tracks, and top albums concurrently to reduce API latency
+    const [
+      { artist: artistInfo },
+      topTracks,
+      topAlbums
+    ] = await Promise.all([
+      getArtistInfo(),
+      getArtistTopTracks(),
+      getArtistTopAlbums()
+    ]);
     const artist = {
       name: artistInfo.name,
       image: artistInfo.image ? artistInfo.image.slice(-1)[0]['#text'] : null,
@@ -224,6 +296,10 @@ exports.getLastfm = async (req, res, next) => {
       topTracks,
       topAlbums
     };
+
+    lastfmCache = artist;
+    lastfmCacheTime = Date.now();
+
     res.render('api/lastfm', {
       title: 'Last.fm API',
       artist
@@ -310,7 +386,7 @@ exports.postTwitter = (req, res, next) => {
  */
 exports.getSteam = async (req, res, next) => {
   const steamId = req.user.steam;
-  const params = { l: 'english', steamid: steamId, key: process.env.STEAM_KEY };
+  const baseParams = { l: 'english', steamid: steamId, key: process.env.STEAM_KEY };
 
   // makes a url with search query
   const makeURL = (baseURL, params) => {
@@ -321,6 +397,7 @@ exports.getSteam = async (req, res, next) => {
   };
     // get the list of the recently played games, pick the most recent one and get its achievements
   const getPlayerAchievements = () => {
+    const params = { ...baseParams };
     const recentGamesURL = makeURL('http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/', params);
     return axios.get(recentGamesURL)
       .then(({ data }) => {
@@ -354,24 +431,30 @@ exports.getSteam = async (req, res, next) => {
       });
   };
   const getPlayerSummaries = () => {
-    params.steamids = steamId;
+    const params = { ...baseParams, steamids: steamId };
     const url = makeURL('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/', params);
     return axios.get(url)
       .then(({ data }) => data)
       .catch(() => Promise.reject(new Error('There was an error while getting player summary')));
   };
   const getOwnedGames = () => {
-    params.include_appinfo = 1;
-    params.include_played_free_games = 1;
+    const params = { ...baseParams, include_appinfo: 1, include_played_free_games: 1 };
     const url = makeURL('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/', params);
     return axios.get(url)
       .then(({ data }) => data)
       .catch(() => Promise.reject(new Error('There was an error while getting owned games')));
   };
   try {
-    const playerstats = await getPlayerAchievements();
-    const playerSummaries = await getPlayerSummaries();
-    const ownedGames = await getOwnedGames();
+    // ⚡ Bolt: Fetch player achievements, summaries, and owned games concurrently to reduce API latency
+    const [
+      playerstats,
+      playerSummaries,
+      ownedGames
+    ] = await Promise.all([
+      getPlayerAchievements(),
+      getPlayerSummaries(),
+      getOwnedGames()
+    ]);
     res.render('api/steam', {
       title: 'Steam Web API',
       ownedGames: ownedGames.response,
@@ -467,9 +550,16 @@ exports.getTwitch = async (req, res, next) => {
       .catch((err) => Promise.reject(new Error(`There was an error while getting followers ${err}`)));
 
   try {
-    const yourTwitchUser = await getUser(twitchID);
-    const otherTwitchUser = await getUser(44322889);
-    const twitchFollowers = await getFollowers();
+    // ⚡ Bolt: Fetch user data and followers concurrently to reduce API latency
+    const [
+      yourTwitchUser,
+      otherTwitchUser,
+      twitchFollowers
+    ] = await Promise.all([
+      getUser(twitchID),
+      getUser(44322889),
+      getFollowers()
+    ]);
     res.render('api/twitch', {
       title: 'Twitch API',
       yourTwitchUserData: yourTwitchUser.data[0],
@@ -513,7 +603,20 @@ exports.postClockwork = (req, res, next) => {
  * GET /api/chart
  * Chart example.
  */
+let chartCache = null;
+let chartCacheTime = 0;
+const CHART_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 exports.getChart = async (req, res, next) => {
+  // ⚡ Bolt: Cache external Alpha Vantage API requests to speed up response times and avoid rate limits
+  if (chartCache && Date.now() - chartCacheTime < CHART_CACHE_DURATION) {
+    return res.render('api/chart', {
+      title: 'Chart',
+      dates: chartCache.dates,
+      closing: chartCache.closing,
+    });
+  }
+
   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&outputsize=compact&apikey=${process.env.ALPHA_VANTAGE_KEY}`;
   axios.get(url)
     .then((response) => {
@@ -530,10 +633,14 @@ exports.getChart = async (req, res, next) => {
       closing.reverse();
       dates = JSON.stringify(dates);
       closing = JSON.stringify(closing);
+
+      chartCache = { dates, closing };
+      chartCacheTime = Date.now();
+
       res.render('api/chart', {
         title: 'Chart',
         dates,
-        closing
+        closing,
       });
     }).catch((err) => {
       next(err);
@@ -673,8 +780,14 @@ exports.getLob = async (req, res, next) => {
     .catch((error) => Promise.reject(new Error(`Could not create and send letter: ${error}`)));
 
   try {
-    const uspsLetter = await createAndMailLetter();
-    const zipDetails = await lookupZip();
+    // ⚡ Bolt: Create letter and lookup zip concurrently to reduce API latency
+    const [
+      uspsLetter,
+      zipDetails
+    ] = await Promise.all([
+      createAndMailLetter(),
+      lookupZip()
+    ]);
     res.render('api/lob', {
       title: 'Lob API',
       zipDetails,
