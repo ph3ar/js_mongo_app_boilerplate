@@ -18,8 +18,18 @@ const passport = require('passport');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
+const rateLimit = require('express-rate-limit');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
+
+/**
+ * Rate limiters.
+ */
+const signupLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Limit each IP to 10 signup requests per `window` (here, per hour)
+  message: 'Too many accounts created from this IP, please try again after an hour'
+});
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -135,7 +145,7 @@ app.post('/forgot', userController.postForgot);
 app.get('/reset/:token', userController.getReset);
 app.post('/reset/:token', userController.postReset);
 app.get('/signup', userController.getSignup);
-app.post('/signup', userController.postSignup);
+app.post('/signup', signupLimiter, userController.postSignup);
 app.get('/contact', contactController.getContact);
 app.post('/contact', contactController.postContact);
 app.get('/account/verify', passportConfig.isAuthenticated, userController.getVerifyEmail);
