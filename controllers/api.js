@@ -15,6 +15,7 @@ const axios = require('axios');
 const { google } = require('googleapis');
 const Quickbooks = require('node-quickbooks');
 const validator = require('validator');
+const sanitizeHtml = require('sanitize-html');
 
 Quickbooks.setOauthVersion('2.0');
 
@@ -117,7 +118,7 @@ exports.getScraping = (req, res, next) => {
       const $ = cheerio.load(response.data);
       const links = [];
       $('.title a[href^="http"], a[href^="https"]').slice(1).each((index, element) => {
-        links.push($(element));
+        links.push(sanitizeHtml($.html(element)));
       });
 
       scrapingCache = links;
@@ -290,7 +291,7 @@ exports.getLastfm = async (req, res, next) => {
       name: artistInfo.name,
       image: artistInfo.image ? artistInfo.image.slice(-1)[0]['#text'] : null,
       tags: artistInfo.tags ? artistInfo.tags.tag : [],
-      bio: artistInfo.bio ? artistInfo.bio.summary : '',
+      bio: artistInfo.bio ? sanitizeHtml(artistInfo.bio.summary) : '',
       stats: artistInfo.stats,
       similar: artistInfo.similar ? artistInfo.similar.artist : [],
       topTracks,

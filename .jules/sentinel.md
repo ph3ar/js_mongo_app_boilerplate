@@ -1,3 +1,7 @@
+## 2024-03-01 - Missing Sanitization in Rendered Output
+**Vulnerability:** XSS vulnerability through unsanitized API responses and scraped data (`artist.bio` and scraped links rendered via Pug's `!=` operator).
+**Learning:** External API data and scraped content must always be treated as untrusted, especially when rendered using raw HTML tags (`!=` in Pug).
+**Prevention:** Use established libraries like `sanitize-html` to sanitize third-party content before passing it to the view, or render as plain text if HTML tags aren't required.
 ## 2024-05-23 - Open Redirect Vulnerability in session returnTo
 **Vulnerability:** The application used `req.originalUrl` to set `req.session.returnTo` directly without validation. An attacker could specify a protocol-relative URL (e.g., `//malicious.com`) which would lead to an open redirect when the application redirects to this value upon successful login.
 **Learning:** `req.originalUrl` can be controlled by user input and may contain protocol-relative paths that bypass basic open redirect protections if not explicitly checked against starting with `//`.
