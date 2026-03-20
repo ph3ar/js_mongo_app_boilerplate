@@ -224,7 +224,19 @@ exports.getNewYorkTimes = (req, res, next) => {
  * GET /api/lastfm
  * Last.fm API example.
  */
+let lastfmCache = null;
+let lastfmCacheTime = 0;
+const LASTFM_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 exports.getLastfm = async (req, res, next) => {
+  // ⚡ Bolt: Cache Last.fm API requests for static artist data to reduce external API calls and latency
+  if (lastfmCache && Date.now() - lastfmCacheTime < LASTFM_CACHE_DURATION) {
+    return res.render('api/lastfm', {
+      title: 'Last.fm API',
+      artist: lastfmCache
+    });
+  }
+
   const lastfm = new LastFmNode({
     api_key: process.env.LASTFM_KEY,
     secret: process.env.LASTFM_SECRET
@@ -284,6 +296,10 @@ exports.getLastfm = async (req, res, next) => {
       topTracks,
       topAlbums
     };
+
+    lastfmCache = artist;
+    lastfmCacheTime = Date.now();
+
     res.render('api/lastfm', {
       title: 'Last.fm API',
       artist
