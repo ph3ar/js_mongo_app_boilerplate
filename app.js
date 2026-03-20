@@ -157,6 +157,13 @@ const forgotRateLimiter = rateLimit({
     'Too many password reset attempts from this IP, please try again after 30 minutes',
 });
 
+const contactRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 10, // start blocking after 10 requests
+  message:
+    'Too many contact requests from this IP, please try again after an hour',
+});
+
 /**
  * Primary app routes.
  */
@@ -171,7 +178,7 @@ app.post('/reset/:token', userController.postReset);
 app.get('/signup', userController.getSignup);
 app.post('/signup', signupRateLimiter, userController.postSignup);
 app.get('/contact', contactController.getContact);
-app.post('/contact', contactController.postContact);
+app.post('/contact', contactRateLimiter, contactController.postContact);
 app.get('/account/verify', passportConfig.isAuthenticated, userController.getVerifyEmail);
 app.get('/account/verify/:token', passportConfig.isAuthenticated, userController.getVerifyEmailToken);
 app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
