@@ -26,16 +26,16 @@ block content
       label.col-md-3.col-form-label.font-weight-bold.text-right Gender
       .col-sm-6
         .form-check.form-check-inline
-          input(type='radio', class='form-check-input', id='gender-male', checked=user.profile.gender == 'male', name='gender', value='male', data-toggle='radio')
-          label.form-check-label(for='gender-male') Male
+          input(type='radio', class='form-check-input' checked=user.profile.gender == 'male', name='gender', value='male', data-toggle='radio')
+          label.form-check-label Male
 
         .form-check.form-check-inline
-          input(type='radio', class='form-check-input', id='gender-female', checked=user.profile.gender == 'female', name='gender', value='female', data-toggle='radio')
-          label.form-check-label(for='gender-female') Female
+          input(type='radio', class='form-check-input' checked=user.profile.gender == 'female', name='gender', value='female', data-toggle='radio')
+          label.form-check-label Female
 
         .form-check.form-check-inline
-          input(type='radio', class='form-check-input', id='gender-other', checked=user.profile.gender == 'other', name='gender', value='other', data-toggle='radio')
-          label.form-check-label(for='gender-other') Other
+          input(type='radio', class='form-check-input' checked=user.profile.gender == 'other', name='gender', value='other', data-toggle='radio')
+          label.form-check-label Other
     .form-group.row
       label.col-md-3.col-form-label.font-weight-bold.text-right(for='location') Location
       .col-md-7
@@ -45,13 +45,13 @@ block content
       .col-md-7
         input.form-control(type='text', name='steamid', id='steamid', value=user.profile.steamid, autocomplete)
     .form-group.row
-      label.col-md-3.col-form-label.font-weight-bold.text-right(for='website') Website
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='steamid') Website
       .col-md-7
         input.form-control(type='text', name='website', id='website', value=user.profile.website, autocomplete='url')
     .form-group.row
       label.col-md-3.col-form-label.font-weight-bold.text-right Gravatar
       .col-sm-4
-        img(src=user.gravatar(), class='profile', width='100', height='100', alt='Profile picture')
+        img(src=user.gravatar(), class='profile', width='100', height='100')
     .form-group
       .offset-sm-3.col-md-7.pl-2
         button.btn.btn.btn-primary(type='submit')

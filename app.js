@@ -10,7 +10,6 @@ const chalk = require('chalk');
 const errorHandler = require('errorhandler');
 const lusca = require('lusca');
 const dotenv = require('dotenv');
-const rateLimit = require('express-rate-limit');
 const MongoStore = require('connect-mongo')(session);
 const flash = require('express-flash');
 const path = require('path');
@@ -19,6 +18,7 @@ const passport = require('passport');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
+const rateLimit = require('express-rate-limit');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
@@ -105,25 +105,15 @@ app.use((req, res, next) => {
 });
 app.use((req, res, next) => {
   // After successful login, redirect back to the intended page
-  if (!req.user &&
-    req.path !== '/login' &&
-    req.path !== '/signup' &&
-    !req.path.match(/^\/auth/) &&
-    !req.path.match(/\./)) {
-    req.session.returnTo = (req.originalUrl || '').match(/^\/[^\/\\].*/) ?
-      req.originalUrl : '/';
-  } else if (req.user &&
-    (req.path === '/account' || req.path.match(/^\/api/))) {
-    req.session.returnTo = (req.originalUrl || '').match(/^\/[^\/\\].*/) ?
-      req.originalUrl : '/';
-  }
-
-  // Prevent open redirect
-  const { returnTo } = req.session;
-  if (returnTo && returnTo !== '/') {
-    if (!returnTo.match(/^\/[^\/]/)) {
-      req.session.returnTo = '/';
-    }
+  if (!req.user
+    && req.path !== '/login'
+    && req.path !== '/signup'
+    && !req.path.match(/^\/auth/)
+    && !req.path.match(/\./)) {
+    req.session.returnTo = req.originalUrl;
+  } else if (req.user
+    && (req.path === '/account' || req.path.match(/^\/api/))) {
+    req.session.returnTo = req.originalUrl;
   }
   next();
 });
@@ -134,25 +124,25 @@ app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/bootstrap/d
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/jquery/dist'), { maxAge: 31557600000 }));
 app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'), { maxAge: 31557600000 }));
 
-const signupRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour window
-  max: 10, // start blocking after 10 requests
-  message: 'Too many accounts created from this IP, please try again after an hour'
-});
-
 /**
  * Primary app routes.
  */
+const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: 'Too many accounts created from this IP, please try again after 15 minutes'
+});
+
 app.get('/', homeController.index);
 app.get('/login', userController.getLogin);
-app.post('/login', userController.postLogin);
+app.post('/login', authRateLimiter, userController.postLogin);
 app.get('/logout', userController.logout);
 app.get('/forgot', userController.getForgot);
-app.post('/forgot', userController.postForgot);
+app.post('/forgot', authRateLimiter, userController.postForgot);
 app.get('/reset/:token', userController.getReset);
-app.post('/reset/:token', userController.postReset);
+app.post('/reset/:token', authRateLimiter, userController.postReset);
 app.get('/signup', userController.getSignup);
-app.post('/signup', signupRateLimiter, userController.postSignup);
+app.post('/signup', authRateLimiter, userController.postSignup);
 app.get('/contact', contactController.getContact);
 app.post('/contact', contactController.postContact);
 app.get('/account/verify', passportConfig.isAuthenticated, userController.getVerifyEmail);
