@@ -358,6 +358,7 @@ exports.getTwitter = async (req, res, next) => {
  * Post a tweet.
  */
 exports.postTwitter = (req, res, next) => {
+  req.body.tweet = String(req.body.tweet || '');
   const validationErrors = [];
   if (validator.isEmpty(req.body.tweet)) validationErrors.push({ msg: 'Tweet cannot be empty' });
 
@@ -513,6 +514,8 @@ exports.getTwilio = (req, res) => {
  * Send a text message using Twilio.
  */
 exports.postTwilio = (req, res, next) => {
+  req.body.number = String(req.body.number || '');
+  req.body.message = String(req.body.message || '');
   const validationErrors = [];
   if (validator.isEmpty(req.body.number)) validationErrors.push({ msg: 'Phone number is required.' });
   if (validator.isEmpty(req.body.message)) validationErrors.push({ msg: 'Message cannot be blank.' });
@@ -586,6 +589,7 @@ exports.getClockwork = (req, res) => {
  * Send a text message using Clockwork SMS
  */
 exports.postClockwork = (req, res, next) => {
+  req.body.telephone = String(req.body.telephone || '');
   const message = {
     To: req.body.telephone,
     From: 'Hackathon',
@@ -836,6 +840,10 @@ exports.getPinterest = (req, res, next) => {
  * Create a pin.
  */
 exports.postPinterest = (req, res, next) => {
+  req.body.board = String(req.body.board || '');
+  req.body.note = String(req.body.note || '');
+  req.body.link = String(req.body.link || '');
+  req.body.image_url = String(req.body.image_url || '');
   const validationErrors = [];
   if (validator.isEmpty(req.body.board)) validationErrors.push({ msg: 'Board is required.' });
   if (validator.isEmpty(req.body.note)) validationErrors.push({ msg: 'Note cannot be blank.' });
