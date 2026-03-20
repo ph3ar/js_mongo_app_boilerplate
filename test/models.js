@@ -89,11 +89,11 @@ describe('User Model', () => {
     };
 
     userMock
-      .expects('remove')
+      .expects('deleteOne')
       .withArgs({ email: 'test@gmail.com' })
       .yields(null, expectedResult);
 
-    User.remove({ email: 'test@gmail.com' }, (err, result) => {
+    User.deleteOne({ email: 'test@gmail.com' }, (err, result) => {
       userMock.verify();
       userMock.restore();
       expect(err).to.be.null;

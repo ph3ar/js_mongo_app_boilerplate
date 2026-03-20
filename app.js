@@ -10,15 +10,14 @@ const chalk = require('chalk');
 const errorHandler = require('errorhandler');
 const lusca = require('lusca');
 const dotenv = require('dotenv');
-const rateLimit = require('express-rate-limit');
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo').default;
 const flash = require('express-flash');
 const path = require('path');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const helmet = require('helmet');
 const expressStatusMonitor = require('express-status-monitor');
-const sass = require('node-sass-middleware');
+const sass = require('sass-middleware');
 const multer = require('multer');
 const rateLimit = require('express-rate-limit');
 
@@ -59,11 +58,11 @@ const app = express();
 /**
  * Connect to MongoDB.
  */
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useUnifiedTopology', true);
-mongoose.connect(process.env.MONGODB_URI);
+
+
+
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/test');
 mongoose.connection.on('error', (err) => {
   console.error(err);
   console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
@@ -89,11 +88,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   resave: true,
   saveUninitialized: true,
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || '123',
   cookie: { maxAge: 1209600000 }, // two weeks in milliseconds
-  store: new MongoStore({
-    url: process.env.MONGODB_URI,
-    autoReconnect: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/test',
+// autoReconnect is removed
   })
 }));
 app.use(helmet());
