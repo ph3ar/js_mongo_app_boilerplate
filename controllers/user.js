@@ -27,7 +27,11 @@ exports.getLogin = (req, res) => {
  * Sign in using email and password.
  */
 exports.postLogin = (req, res, next) => {
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
   if (validator.isEmpty(req.body.password)) validationErrors.push({ msg: 'Password cannot be blank.' });
 
@@ -82,7 +86,12 @@ exports.getSignup = (req, res) => {
  * Create a new local account.
  */
 exports.postSignup = (req, res, next) => {
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.password = String(req.body.password || '');
+  req.body.confirmPassword = String(req.body.confirmPassword || '');
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match' });
@@ -98,7 +107,8 @@ exports.postSignup = (req, res, next) => {
     password: req.body.password
   });
 
-  User.findOne({ email: req.body.email }, (err, existingUser) => {
+  // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
+  User.findOne({ email: req.body.email }).lean().exec((err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
@@ -132,6 +142,13 @@ exports.getAccount = (req, res) => {
  */
 exports.postUpdateProfile = (req, res, next) => {
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+  req.body.name = String(req.body.name || '');
+  req.body.gender = String(req.body.gender || '');
+  req.body.steamid = String(req.body.steamid || '');
+  req.body.location = String(req.body.location || '');
+  req.body.website = String(req.body.website || '');
+
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
 
   if (validationErrors.length) {
@@ -169,6 +186,9 @@ exports.postUpdateProfile = (req, res, next) => {
  */
 exports.postUpdatePassword = (req, res, next) => {
   const validationErrors = [];
+  req.body.password = String(req.body.password || '');
+  req.body.confirmPassword = String(req.body.confirmPassword || '');
+
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirmPassword) validationErrors.push({ msg: 'Passwords do not match' });
 
@@ -249,9 +269,12 @@ exports.getReset = (req, res, next) => {
     return res.redirect('/forgot');
   }
 
+  // Use .lean() for read-only query optimization since we only check for existence
+  // Note: plain JS objects lose Mongoose virtuals like .id
   User
-    .findOne({ passwordResetToken: req.params.token })
+    .findOne({ passwordResetToken: String(req.params.token) })
     .where('passwordResetExpires').gt(Date.now())
+    .lean()
     .exec((err, user) => {
       if (err) { return next(err); }
       if (!user) {
@@ -357,24 +380,7 @@ exports.getVerifyEmail = (req, res, next) => {
         req.flash('info', { msg: `An e-mail has been sent to ${req.user.email} with further instructions.` });
       })
       .catch((err) => {
-        if (err.message === 'self signed certificate in certificate chain') {
-          console.log('WARNING: Self signed certificate in certificate chain. Retrying with the self signed certificate. Use a valid certificate if in production.');
-          transporter = nodemailer.createTransport({
-            service: 'SendGrid',
-            auth: {
-              user: process.env.SENDGRID_USER,
-              pass: process.env.SENDGRID_PASSWORD
-            },
-            tls: {
-              rejectUnauthorized: false
-            }
-          });
-          return transporter.sendMail(mailOptions)
-            .then(() => {
-              req.flash('info', { msg: `An e-mail has been sent to ${req.user.email} with further instructions.` });
-            });
-        }
-        console.log('ERROR: Could not send verifyEmail email after security downgrade.\n', err);
+        console.log('ERROR: Could not send verifyEmail email.\n', err);
         req.flash('errors', { msg: 'Error sending the email verification message. Please try again shortly.' });
         return err;
       });
@@ -393,6 +399,9 @@ exports.getVerifyEmail = (req, res, next) => {
  */
 exports.postReset = (req, res, next) => {
   const validationErrors = [];
+  req.body.password = String(req.body.password || '');
+  req.body.confirm = String(req.body.confirm || '');
+
   if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push({ msg: 'Password must be at least 8 characters long' });
   if (req.body.password !== req.body.confirm) validationErrors.push({ msg: 'Passwords do not match' });
   if (!validator.isHexadecimal(req.params.token)) validationErrors.push({ msg: 'Invalid Token.  Please retry.' });
@@ -442,24 +451,7 @@ exports.postReset = (req, res, next) => {
         req.flash('success', { msg: 'Success! Your password has been changed.' });
       })
       .catch((err) => {
-        if (err.message === 'self signed certificate in certificate chain') {
-          console.log('WARNING: Self signed certificate in certificate chain. Retrying with the self signed certificate. Use a valid certificate if in production.');
-          transporter = nodemailer.createTransport({
-            service: 'SendGrid',
-            auth: {
-              user: process.env.SENDGRID_USER,
-              pass: process.env.SENDGRID_PASSWORD
-            },
-            tls: {
-              rejectUnauthorized: false
-            }
-          });
-          return transporter.sendMail(mailOptions)
-            .then(() => {
-              req.flash('success', { msg: 'Success! Your password has been changed.' });
-            });
-        }
-        console.log('ERROR: Could not send password reset confirmation email after security downgrade.\n', err);
+        console.log('ERROR: Could not send password reset confirmation email.\n', err);
         req.flash('warning', { msg: 'Your password has been changed, however we were unable to send you a confirmation email. We will be looking into it shortly.' });
         return err;
       });
@@ -490,6 +482,8 @@ exports.getForgot = (req, res) => {
  */
 exports.postForgot = (req, res, next) => {
   const validationErrors = [];
+  req.body.email = String(req.body.email || '');
+
   if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: 'Please enter a valid email address.' });
 
   if (validationErrors.length) {
@@ -503,7 +497,7 @@ exports.postForgot = (req, res, next) => {
 
   const setRandomToken = (token) =>
     User
-      .findOne({ email: req.body.email })
+      .findOne({ email: String(req.body.email) })
       .then((user) => {
         if (!user) {
           req.flash('errors', { msg: 'Account with that email address does not exist.' });
@@ -539,24 +533,7 @@ exports.postForgot = (req, res, next) => {
         req.flash('info', { msg: `An e-mail has been sent to ${user.email} with further instructions.` });
       })
       .catch((err) => {
-        if (err.message === 'self signed certificate in certificate chain') {
-          console.log('WARNING: Self signed certificate in certificate chain. Retrying with the self signed certificate. Use a valid certificate if in production.');
-          transporter = nodemailer.createTransport({
-            service: 'SendGrid',
-            auth: {
-              user: process.env.SENDGRID_USER,
-              pass: process.env.SENDGRID_PASSWORD
-            },
-            tls: {
-              rejectUnauthorized: false
-            }
-          });
-          return transporter.sendMail(mailOptions)
-            .then(() => {
-              req.flash('info', { msg: `An e-mail has been sent to ${user.email} with further instructions.` });
-            });
-        }
-        console.log('ERROR: Could not send forgot password email after security downgrade.\n', err);
+        console.log('ERROR: Could not send forgot password email.\n', err);
         req.flash('errors', { msg: 'Error sending the password reset message. Please try again shortly.' });
         return err;
       });
