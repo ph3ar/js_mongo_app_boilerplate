@@ -21,7 +21,7 @@ block content
       form(role='form', enctype='multipart/form-data', method='POST')
         input(type='hidden', name='_csrf', value=_csrf)
         .form-group
-          label.col-form-label.font-weight-bold File Input
+          label.col-form-label.font-weight-bold(for='myFile') File Input
           .col-md-6
-            input(type='file', name='myFile')
+            input(type='file', name='myFile', id='myFile')
         button.btn.btn-primary(type='submit') Submit
