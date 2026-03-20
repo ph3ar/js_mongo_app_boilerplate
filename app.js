@@ -20,8 +20,18 @@ const helmet = require('helmet');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
+const rateLimit = require('express-rate-limit');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
+
+/**
+ * Rate limiters.
+ */
+const signupLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Limit each IP to 10 signup requests per `window` (here, per hour)
+  message: 'Too many accounts created from this IP, please try again after an hour'
+});
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.

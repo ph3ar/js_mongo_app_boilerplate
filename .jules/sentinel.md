@@ -1,3 +1,7 @@
+## 2024-05-18 - [HIGH] Fix NoSQL injection in Mongoose queries
+**Vulnerability:** User-controlled input (like `req.body.email`) was directly passed into Mongoose query objects (`User.findOne({ email: req.body.email })`).
+**Learning:** This pattern is susceptible to NoSQL injection if an attacker sends an object with MongoDB query operators (e.g., `{"email": {"$gt": ""}}`) instead of a simple string, potentially bypassing authentication or uniqueness checks. CodeQL flags this as a critical vulnerability. Additionally, passing an object to functions like `toLowerCase()` on user input without type checking throws unhandled `TypeError` exceptions, leading to potential DoS.
+**Prevention:** Always explicitly cast user-provided input to the expected primitive type (e.g., `String(req.body.email)`) before using it in Mongoose queries or invoking string methods on it.
 ## 2024-03-01 - Missing Sanitization in Rendered Output
 **Vulnerability:** XSS vulnerability through unsanitized API responses and scraped data (`artist.bio` and scraped links rendered via Pug's `!=` operator).
 **Learning:** External API data and scraped content must always be treated as untrusted, especially when rendered using raw HTML tags (`!=` in Pug).
