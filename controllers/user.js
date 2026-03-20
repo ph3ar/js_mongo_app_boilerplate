@@ -98,7 +98,7 @@ exports.postSignup = (req, res, next) => {
     password: req.body.password
   });
 
-  User.findOne({ email: req.body.email }, (err, existingUser) => {
+  User.findOne({ email: req.body.email }).lean().exec((err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
@@ -252,7 +252,7 @@ exports.getReset = (req, res, next) => {
   User
     .findOne({ passwordResetToken: req.params.token })
     .where('passwordResetExpires').gt(Date.now())
-    .exec((err, user) => {
+    .lean().exec((err, user) => {
       if (err) { return next(err); }
       if (!user) {
         req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });

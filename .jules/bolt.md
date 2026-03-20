@@ -1,0 +1,3 @@
+## 2026-03-20 - Mongoose .lean() with Passport
+**Learning:** Returning lean Mongoose objects (plain JS objects) to Passport's `done()` callback causes critical authentication regressions. Passport's `serializeUser` relies on Mongoose virtual getters like `.id`. Because `.id` evaluates to `undefined` on plain objects, OAuth login fails entirely.
+**Action:** Never apply `.lean()` to Mongoose queries if the resulting document is directly passed to a Passport authentication strategy callback or used for subsequent `.save()` operations. Only use `.lean()` for pure existence checks where the object is discarded or only specific string properties are read.
