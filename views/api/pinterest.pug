@@ -21,23 +21,23 @@ block content
     input(type='hidden', name='_csrf', value=_csrf)
     .form-group.row
       .col-md-6
-        label.col-form-label.font-weight-bold Board
-        select.form-control(name='board')
+        label.col-form-label.font-weight-bold(for='board') Board
+        select.form-control(name='board', id='board')
           for board in boards
             option(value=board.id)= board.name
       .col-md-6
-        label.col-form-label.font-weight-bold Note
+        label.col-form-label.font-weight-bold(for='note') Note
         .col-md-6
-          input.form-control(name='note', placeholder='The Pin\'s description.')
+          input.form-control(name='note', id='note', placeholder='The Pin\'s description.')
     .form-group.row
       .col-md-6
-        label.col-form-label.font-weight-bold Link
+        label.col-form-label.font-weight-bold(for='link') Link
         .col-md-6
-          input.form-control(name='link', placeholder='The URL the Pin will link to when you click through.')
+          input.form-control(name='link', id='link', placeholder='The URL the Pin will link to when you click through.')
       .col-md-6
-        label.col-form-label.font-weight-bold Image URL
+        label.col-form-label.font-weight-bold(for='image_url') Image URL
         .col-md-6
-          input.form-control(name='image_url', placeholder='The link to the image that you want to Pin.')
+          input.form-control(name='image_url', id='image_url', placeholder='The link to the image that you want to Pin.')
     button.btn.btn-primary(type='submit')
         i.fab.fa-pinterest.fa-sm
         |  Pin It
