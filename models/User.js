@@ -5,21 +5,22 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
-  passwordResetToken: String,
+  passwordResetToken: { type: String, index: true },
   passwordResetExpires: Date,
   emailVerificationToken: String,
   emailVerified: Boolean,
 
-  snapchat: String,
-  facebook: String,
-  twitter: String,
-  google: String,
-  github: String,
-  instagram: String,
-  linkedin: String,
-  steam: String,
-  twitch: String,
-  quickbooks: String,
+  // ⚡ Bolt: Added sparse unique indexes to OAuth provider IDs to prevent O(N) full collection scans during login
+  snapchat: { type: String, unique: true, sparse: true },
+  facebook: { type: String, unique: true, sparse: true },
+  twitter: { type: String, unique: true, sparse: true },
+  google: { type: String, unique: true, sparse: true },
+  github: { type: String, unique: true, sparse: true },
+  instagram: { type: String, unique: true, sparse: true },
+  linkedin: { type: String, unique: true, sparse: true },
+  steam: { type: String, unique: true, sparse: true },
+  twitch: { type: String, unique: true, sparse: true },
+  quickbooks: { type: String, unique: true, sparse: true },
   tokens: Array,
 
   profile: {
