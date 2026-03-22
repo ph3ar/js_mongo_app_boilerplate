@@ -26,3 +26,7 @@
 **Vulnerability:** Missing rate limit on `/forgot` endpoint allowing potential DoS and email flooding.
 **Learning:** Legacy endpoints sending emails or SMS must be explicitly protected by rate limiters to prevent abuse.
 **Prevention:** Always apply `express-rate-limit` (or similar) to any route that triggers external side-effects like email delivery.
+## 2026-03-22 - [HIGH] Open Redirect Bypass via Backslash in session returnTo
+**Vulnerability:** The application attempted to prevent open redirects by verifying that `req.session.returnTo` matched `/^\/[^\/]/`. However, an attacker could supply a path like `/\evil.com`, which Express and browsers treat as `//evil.com`, leading to an open redirect.
+**Learning:** Checking that a URL path starts with a single slash and is not followed by another forward slash is insufficient protection for open redirects. Backslashes (`\`) can act similarly to forward slashes in URL parsing contexts, allowing for protocol-relative bypasses.
+**Prevention:** Update regex validation for absolute local paths to also reject backslashes. For example, use `/^\/[^\/\\]/` to enforce that the path begins strictly with `/` followed by any character except `/` or `\`.

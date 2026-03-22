@@ -134,7 +134,7 @@ app.use((req, res, next) => {
   // Prevent open redirect
   const { returnTo } = req.session;
   if (returnTo && returnTo !== '/') {
-    if (!returnTo.match(/^\/[^\/]/)) {
+    if (!returnTo.match(/^\/[^\/\\]/)) {
       req.session.returnTo = '/';
     }
   }
