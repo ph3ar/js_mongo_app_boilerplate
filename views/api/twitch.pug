@@ -14,7 +14,7 @@ block content
   h3 Your Public Profile Information
   .row
     .col-sm-2
-      img(src=yourTwitchUserData.profile_image_url, width='92', height='92')
+      img(src=yourTwitchUserData.profile_image_url, width='92', height='92', alt='Your Twitch profile picture')
     .col-sm-8
       span.lead Name: #{yourTwitchUserData.display_name}
       div Twitch ID: #{yourTwitchUserData.login}
@@ -28,7 +28,7 @@ block content
   h3 Public Profile Information - Example
   .row
     .col-sm-2
-      img(src=otherTwitchUserData.profile_image_url, width='92', height='92')
+      img(src=otherTwitchUserData.profile_image_url, width='92', height='92', alt='Other Twitch profile picture')
     .col-sm-8
       span.lead Name: #{otherTwitchUserData.display_name}
       div Twitch ID: #{otherTwitchUserData.login}
