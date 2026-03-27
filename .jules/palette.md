@@ -29,3 +29,6 @@
 ## 2026-03-20 - Redundant Alt Text on Decorative Icons
 **Learning:** Adding descriptive `alt` text to images that sit right next to their textual equivalent (e.g., `alt='GitHub Logo' | GitHub`) can cause screen readers to announce the information redundantly. For decorative images next to text, an empty string `alt=""` is often preferred to make the screen reader skip the image entirely. However, adding descriptive `alt` text is still vastly superior to omitting the attribute entirely, which causes the screen reader to read the raw image URL.
 **Action:** When adding `alt` attributes to images that are purely decorative or immediately followed by the exact same text, consider using an empty string `alt=""` to avoid redundant announcements.
+## 2026-03-26 - Missing form labels in Twitter API view
+**Learning:** Found an accessibility issue pattern where inputs in views (like the Compose Tweet field) were completely lacking labels, forcing screen readers to guess their purpose.
+**Action:** Always verify that input fields have either a visible label or a screen-reader-only (`.sr-only`) label connected via `for`/`id` attributes.
