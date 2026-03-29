@@ -24,7 +24,8 @@ block content
     form(role='form', method='POST')
       input(type='hidden', name='_csrf', value=_csrf)
       .form-group
-        input.form-control(type='text', name='tweet', autofocus)
+        label.sr-only(for='tweet') Compose new Tweet
+        input.form-control(type='text', name='tweet', id='tweet', autofocus)
         p.form-text This new Tweet will be posted on your Twitter profile.
       button.btn.btn-primary(type='submit')
         i.fab.fa-twitter.fa-sm
@@ -45,7 +46,7 @@ block content
       li.media
         a.float-left(href='#')
           - var image = tweet.user.profile_image_url.replace('_normal', '');
-          img.media-object(src=image, style='width: 64px; height: 64px;')
+          img.media-object(src=image, style='width: 64px; height: 64px;', alt='')
         .media-body
           strong.media-heading #{tweet.user.name}
           span.text-muted  @#{tweet.user.screen_name}
