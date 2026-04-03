@@ -20,7 +20,8 @@ block content
       form(role='form', method='POST')
         input(type='hidden', name='_csrf', value=_csrf)
         .form-group
+          label.visually-hidden(for='telephone') Phone Number
           .input-group
-            input.form-control(type='text', name='telephone', placeholder='Phone Number (international format)')
+            input.form-control(type='text', name='telephone', id='telephone', placeholder='Phone Number (international format)')
             span.input-group-btn
               button.btn.btn-success(type='submit') Send
