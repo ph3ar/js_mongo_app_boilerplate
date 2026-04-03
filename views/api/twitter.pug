@@ -24,7 +24,7 @@ block content
     form(role='form', method='POST')
       input(type='hidden', name='_csrf', value=_csrf)
       .form-group
-        label.sr-only(for='tweet') Compose new Tweet
+        label.visually-hidden(for='tweet') Compose new Tweet
         input.form-control(type='text', name='tweet', id='tweet', autofocus)
         p.form-text This new Tweet will be posted on your Twitter profile.
       button.btn.btn-primary(type='submit')
