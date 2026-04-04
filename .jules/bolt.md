@@ -28,3 +28,6 @@
 ## 2026-03-22 - [Caching Static External API Calls]
 **Learning:** Some controller endpoints (like `/api/lastfm`) make external API calls for static data (e.g., info about a specific artist "Roniit") that does not vary per user. Fetching this data from external APIs on every single user request introduces massive, unnecessary latency and wastes API rate limits.
 **Action:** When an endpoint fetches external data that is static across all users and uses a global application key (not a user-specific OAuth token), implement a module-level cache (e.g., `let cache = null; let cacheTime = 0;`) with a reasonable duration (e.g., 5 minutes) to serve the data instantly and reduce network overhead.
+## 2026-03-31 - Native Lazy Loading for Images
+**Learning:** Native image lazy-loading (`loading="lazy"`) is an extremely simple and safe performance optimization for pages with many images (e.g., the API Sandbox index). It works well with standard `img` tags in Pug without requiring any new JavaScript dependencies or libraries, falling back gracefully in older browsers.
+**Action:** Always check if grids or long lists of images have the `loading="lazy"` attribute. If not, adding it is a quick win for initial page load times and bandwidth savings.
