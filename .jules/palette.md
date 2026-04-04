@@ -32,3 +32,6 @@
 ## 2026-03-26 - Missing form labels in Twitter API view
 **Learning:** Found an accessibility issue pattern where inputs in views (like the Compose Tweet field) were completely lacking labels, forcing screen readers to guess their purpose.
 **Action:** Always verify that input fields have either a visible label or a screen-reader-only (`.sr-only`) label connected via `for`/`id` attributes.
+## 2026-03-26 - Context-Aware Alt Text in Pug Templates
+**Learning:** Many API view templates iteratively render dynamic images (e.g., `lastfm.pug` showing Top Albums) using `img(src=...)` with no `alt` text. This leaves screen readers totally blind to the images' content.
+**Action:** When adding missing `alt` attributes to dynamic images in Pug templates, prefer context-aware descriptions that leverage existing loop or context variables (e.g., `alt=artist.name + ' image'`) over generic strings.
