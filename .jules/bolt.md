@@ -28,3 +28,6 @@
 ## 2026-03-22 - [Caching Static External API Calls]
 **Learning:** Some controller endpoints (like `/api/lastfm`) make external API calls for static data (e.g., info about a specific artist "Roniit") that does not vary per user. Fetching this data from external APIs on every single user request introduces massive, unnecessary latency and wastes API rate limits.
 **Action:** When an endpoint fetches external data that is static across all users and uses a global application key (not a user-specific OAuth token), implement a module-level cache (e.g., `let cache = null; let cacheTime = 0;`) with a reasonable duration (e.g., 5 minutes) to serve the data instantly and reduce network overhead.
+## 2026-04-08 - Added Native Lazy Loading to Image Grids
+**Learning:** Found an opportunity to improve frontend initial load times in Pug templates containing large image grids (`views/api/index.pug`) by adding the native `loading='lazy'` attribute.
+**Action:** Always check loop constructs or large grids of static images in views (especially logos or thumbnails) for missing lazy loading to easily defer below-the-fold asset loading.
