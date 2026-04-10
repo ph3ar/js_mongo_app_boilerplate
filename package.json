@@ -22,7 +22,7 @@
     "@ladjs/bootstrap-social": "^7.0.2",
     "@octokit/rest": "^22.0.1",
     "@sendgrid/mail": "^8.1.6",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",
     "bootstrap": "^5.3.8",
