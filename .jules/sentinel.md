@@ -30,3 +30,8 @@
 **Vulnerability:** The application attempted to prevent open redirects by verifying that `req.session.returnTo` matched `/^\/[^\/]/`. However, an attacker could supply a path like `/\evil.com`, which Express and browsers treat as `//evil.com`, leading to an open redirect.
 **Learning:** Checking that a URL path starts with a single slash and is not followed by another forward slash is insufficient protection for open redirects. Backslashes (`\`) can act similarly to forward slashes in URL parsing contexts, allowing for protocol-relative bypasses.
 **Prevention:** Update regex validation for absolute local paths to also reject backslashes. For example, use `/^\/[^\/\\]/` to enforce that the path begins strictly with `/` followed by any character except `/` or `\`.
+
+## 2024-04-12 - Prevent Arbitrary Field Deletion in Mongoose Document Update
+**Vulnerability:** Arbitrary field deletion/modification via Insecure Direct Object Reference (IDOR) on Mongoose objects in `controllers/user.js`. The OAuth provider unlinking feature (`getOauthUnlink`) allowed users to delete arbitrary Mongoose object properties by accepting unvalidated, dynamic `provider` values from the route parameter (e.g., `user[provider.toLowerCase()] = undefined;`).
+**Learning:** In dynamically-typed environments, accessing/modifying object properties dynamically using unvalidated user input directly exposes the underlying object structure (and potentially critical fields, like `email` or `password`) to modification or destruction.
+**Prevention:** Always validate unconstrained user inputs used as keys against a static allowlist (e.g., expected OAuth providers) before using them to access or modify properties on database models or objects.
