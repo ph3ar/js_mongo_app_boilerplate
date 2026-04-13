@@ -226,12 +226,20 @@ exports.postDeleteAccount = (req, res, next) => {
  * Unlink OAuth provider.
  */
 exports.getOauthUnlink = (req, res, next) => {
-  const { provider } = req.params;
+  let { provider } = req.params;
+  provider = String(provider || '').toLowerCase();
+  const allowedProviders = ['snapchat', 'facebook', 'twitter', 'google', 'github', 'instagram', 'linkedin', 'steam', 'twitch', 'quickbooks', 'foursquare', 'tumblr', 'pinterest'];
+
+  if (!allowedProviders.includes(provider)) {
+    req.flash('errors', { msg: 'Invalid OAuth Provider' });
+    return res.redirect('/account');
+  }
+
   User.findById(req.user.id, (err, user) => {
     if (err) { return next(err); }
-    user[provider.toLowerCase()] = undefined;
+    user[provider] = undefined;
     const tokensWithoutProviderToUnlink = user.tokens.filter((token) =>
-      token.kind !== provider.toLowerCase());
+      token.kind !== provider);
     // Some auth providers do not provide an email address in the user profile.
     // As a result, we need to verify that unlinking the provider is safe by ensuring
     // that another login method exists.
