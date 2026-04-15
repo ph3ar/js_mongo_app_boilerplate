@@ -32,3 +32,6 @@
 ## 2026-03-26 - Missing form labels in Twitter API view
 **Learning:** Found an accessibility issue pattern where inputs in views (like the Compose Tweet field) were completely lacking labels, forcing screen readers to guess their purpose.
 **Action:** Always verify that input fields have either a visible label or a screen-reader-only (`.sr-only`) label connected via `for`/`id` attributes.
+## 2024-04-15 - Context-aware alt attributes for dynamic templates
+**Learning:** When adding `alt` attributes to images generated via loops or complex objects in Pug templates (e.g. `venueDetail.venue.photos...`), use the closest relevant text variable (like `venueDetail.venue.name + ' photo'`) rather than generic text. This improves screen reader context significantly and ensures each dynamic image has a unique, descriptive label.
+**Action:** Always inspect the surrounding template code or controller structure to find available variables for contextual image descriptions.
