@@ -19,7 +19,7 @@ block content
   h3
     i.far.fa-user.fa-sm
     |  My Profile
-  img.thumbnail(src=`https://graph.facebook.com/${profile.id}/picture?type=large`, width='90', height='90')
+  img.thumbnail(src=`https://graph.facebook.com/${profile.id}/picture?type=large`, width='90', height='90', alt='Profile picture')
   h4= profile.name
   h6 First Name: #{profile.first_name}
   h6 Last Name: #{profile.last_name}

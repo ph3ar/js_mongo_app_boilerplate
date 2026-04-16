@@ -32,3 +32,6 @@
 ## 2026-03-26 - Missing form labels in Twitter API view
 **Learning:** Found an accessibility issue pattern where inputs in views (like the Compose Tweet field) were completely lacking labels, forcing screen readers to guess their purpose.
 **Action:** Always verify that input fields have either a visible label or a screen-reader-only (`.sr-only`) label connected via `for`/`id` attributes.
+## 2026-03-31 - Missing alt attributes on individual view images
+**Learning:** Found an accessibility issue pattern where individual images (like the Tumblr photo, Google Drive icons, HERE Map, profile pictures in Facebook and Instagram, and venue pictures in Foursquare) consistently lacked `alt` attributes, making them inaccessible to screen readers.
+**Action:** Always verify `alt` attributes are present when creating or modifying views that include dynamic or static images, and provide meaningful descriptions (e.g. `alt=venueDetail.venue.name` or `alt='Profile picture'`).
