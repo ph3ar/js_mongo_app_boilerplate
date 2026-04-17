@@ -107,8 +107,8 @@ exports.postSignup = (req, res, next) => {
     password: req.body.password
   });
 
-  // ⚡ Bolt: Use .lean() for read-only existence check to skip Mongoose document instantiation overhead
-  User.findOne({ email: req.body.email }).lean().exec((err, existingUser) => {
+  // ⚡ Bolt: Use .select('_id').lean() for read-only existence check to skip full document payload and instantiation
+  User.findOne({ email: req.body.email }).select('_id').lean().exec((err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
@@ -274,6 +274,7 @@ exports.getReset = (req, res, next) => {
   User
     .findOne({ passwordResetToken: String(req.params.token) })
     .where('passwordResetExpires').gt(Date.now())
+    .select('_id')
     .lean()
     .exec((err, user) => {
       if (err) { return next(err); }
