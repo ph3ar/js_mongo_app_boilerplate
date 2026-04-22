@@ -32,3 +32,6 @@
 ## 2026-03-26 - Missing form labels in Twitter API view
 **Learning:** Found an accessibility issue pattern where inputs in views (like the Compose Tweet field) were completely lacking labels, forcing screen readers to guess their purpose.
 **Action:** Always verify that input fields have either a visible label or a screen-reader-only (`.sr-only`) label connected via `for`/`id` attributes.
+## 2024-05-24 - Missing Alt Attributes in API Views
+**Learning:** Many views in the `api` folder use `img` tags to display user profiles, album covers, or API-specific icons (like Foursquare venues or Google Drive icons), but lack `alt` tags. Because they are often dynamically populated (e.g., `artist.image`), they are easily missed during copy-pasting.
+**Action:** When working on API or user profile views, consistently verify that `img` tags include contextual `alt` attributes based on template variables (e.g., `alt=artist.name + ' profile picture'`) to improve accessibility.
