@@ -35,3 +35,6 @@
 ## 2024-05-24 - Missing Alt Attributes in API Views
 **Learning:** Many views in the `api` folder use `img` tags to display user profiles, album covers, or API-specific icons (like Foursquare venues or Google Drive icons), but lack `alt` tags. Because they are often dynamically populated (e.g., `artist.image`), they are easily missed during copy-pasting.
 **Action:** When working on API or user profile views, consistently verify that `img` tags include contextual `alt` attributes based on template variables (e.g., `alt=artist.name + ' profile picture'`) to improve accessibility.
+## 2026-04-22 - Hide decorative FontAwesome icons from screen readers
+**Learning:** Found an accessibility issue pattern where decorative FontAwesome icons (`i.fa-*`) placed alongside visible text inside buttons or links were being read out by screen readers, causing confusing or redundant announcements.
+**Action:** When adding or auditing buttons or links containing both an icon and text, always add `aria-hidden='true'` to the purely decorative `i` element to ensure screen readers skip it.

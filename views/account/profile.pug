@@ -55,7 +55,7 @@ block content
     .form-group
       .offset-sm-3.col-md-7.pl-2
         button.btn.btn.btn-primary(type='submit')
-          i.fas.fa-pencil-alt.fa-sm
+          i.fas.fa-pencil-alt.fa-sm(aria-hidden='true')
           | Update Profile
 
   .pb-2.mt-2.mb-4.border-bottom
@@ -74,7 +74,7 @@ block content
     .form-group
       .offset-sm-3.col-md-7.pl-2
         button.btn.btn-primary(type='submit')
-          i.fas.fa-lock.fa-sm
+          i.fas.fa-lock.fa-sm(aria-hidden='true')
           | Change Password
 
   .pb-2.mt-2.mb-4.border-bottom
@@ -86,7 +86,7 @@ block content
       input(type='hidden', name='_csrf', value=_csrf)
       .offset-sm-3.col-md-7.pl-2
         button.btn.btn-danger(type='submit')
-          i.fas.fa-trash-alt.fa-sm
+          i.fas.fa-trash-alt.fa-sm(aria-hidden='true')
           | Delete my account
 
   .pb-2.mt-2.mb-4.border-bottom
