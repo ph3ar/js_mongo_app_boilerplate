@@ -28,6 +28,12 @@
 ## 2026-03-22 - [Caching Static External API Calls]
 **Learning:** Some controller endpoints (like `/api/lastfm`) make external API calls for static data (e.g., info about a specific artist "Roniit") that does not vary per user. Fetching this data from external APIs on every single user request introduces massive, unnecessary latency and wastes API rate limits.
 **Action:** When an endpoint fetches external data that is static across all users and uses a global application key (not a user-specific OAuth token), implement a module-level cache (e.g., `let cache = null; let cacheTime = 0;`) with a reasonable duration (e.g., 5 minutes) to serve the data instantly and reduce network overhead.
+<<<<<<< bolt-optimize-db-existence-checks-12972401251432066817
 ## 2026-04-10 - [Optimize DB Network Payload for Existence Checks]
 **Learning:** Using `.lean()` on `Model.findOne()` checks for existence skips Mongoose object instantiation, but it still pulls the entire document across the network from MongoDB. For simple read-only existence checks where only truthiness is evaluated (or an `_id` is sufficient), chaining `.select('_id')` before `.lean()` minimizes the DB query payload and execution time.
 **Action:** Use `.select('_id').lean().exec(...)` for read-only existence checks when callback structure is required, instead of just `.lean()`.
+=======
+## 2026-04-10 - Native Lazy Loading on Image Grids
+**Learning:** Adding the native `loading="lazy"` attribute to image tags is a safe, zero-dependency micro-optimization for views with many off-screen images (like the API Sandbox grid). It defers image loading, saves bandwidth, and speeds up initial page load, and degrades gracefully on older browsers.
+**Action:** Always check loop-generated image grids and long pages for missing `loading="lazy"` attributes to implement an easy frontend performance win without adding complex JS libraries.
+>>>>>>> master
