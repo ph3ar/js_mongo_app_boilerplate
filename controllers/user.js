@@ -227,6 +227,14 @@ exports.postDeleteAccount = (req, res, next) => {
  */
 exports.getOauthUnlink = (req, res, next) => {
   const { provider } = req.params;
+  const allowedProviders = [
+    'snapchat', 'facebook', 'twitter', 'google', 'github', 'instagram',
+    'linkedin', 'steam', 'twitch', 'quickbooks', 'foursquare', 'tumblr', 'pinterest'
+  ];
+  if (!allowedProviders.includes(provider.toLowerCase())) {
+    req.flash('errors', { msg: 'Invalid OAuth Provider' });
+    return res.redirect('/account');
+  }
   User.findById(req.user.id, (err, user) => {
     if (err) { return next(err); }
     user[provider.toLowerCase()] = undefined;
