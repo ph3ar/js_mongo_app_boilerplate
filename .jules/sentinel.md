@@ -30,3 +30,7 @@
 **Vulnerability:** The application attempted to prevent open redirects by verifying that `req.session.returnTo` matched `/^\/[^\/]/`. However, an attacker could supply a path like `/\evil.com`, which Express and browsers treat as `//evil.com`, leading to an open redirect.
 **Learning:** Checking that a URL path starts with a single slash and is not followed by another forward slash is insufficient protection for open redirects. Backslashes (`\`) can act similarly to forward slashes in URL parsing contexts, allowing for protocol-relative bypasses.
 **Prevention:** Update regex validation for absolute local paths to also reject backslashes. For example, use `/^\/[^\/\\]/` to enforce that the path begins strictly with `/` followed by any character except `/` or `\`.
+## 2024-05-24 - [CRITICAL] Arbitrary Field Deletion via dynamic model property access
+**Vulnerability:** User-provided string from URL parameter (`req.params.provider`) was used as a dynamic object property key on the Mongoose user model `user[provider.toLowerCase()] = undefined` to delete OAuth properties. A malicious user could send `password`, `email`, or other critical fields as the provider to arbitrarily delete data and disrupt the service.
+**Learning:** Never trust user input to directly index and modify model properties in Mongoose or ORMs.
+**Prevention:** Always validate user input against a strict allowlist of fields (e.g., specific OAuth provider names) before using it as an object key to modify data.
