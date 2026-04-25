@@ -30,3 +30,7 @@
 **Vulnerability:** The application attempted to prevent open redirects by verifying that `req.session.returnTo` matched `/^\/[^\/]/`. However, an attacker could supply a path like `/\evil.com`, which Express and browsers treat as `//evil.com`, leading to an open redirect.
 **Learning:** Checking that a URL path starts with a single slash and is not followed by another forward slash is insufficient protection for open redirects. Backslashes (`\`) can act similarly to forward slashes in URL parsing contexts, allowing for protocol-relative bypasses.
 **Prevention:** Update regex validation for absolute local paths to also reject backslashes. For example, use `/^\/[^\/\\]/` to enforce that the path begins strictly with `/` followed by any character except `/` or `\`.
+## 2025-04-25 - Prevent IDOR in OAuth Unlink
+**Vulnerability:** Arbitrary Field Deletion / Prototype Pollution / Insecure Direct Object Reference (IDOR) via `req.params.provider` in `getOauthUnlink` route in `controllers/user.js`.
+**Learning:** `user[provider.toLowerCase()] = undefined;` without validation allowed users to pass arbitrary values (like 'password', 'email') in the URL and set those fields to `undefined` on their user object.
+**Prevention:** Always validate user input used as a key for property access or modification against a strict allowlist.
