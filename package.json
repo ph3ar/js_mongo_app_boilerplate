@@ -51,7 +51,7 @@
     "moment": "^2.30.1",
     "mongoose": "^9.2.4",
     "morgan": "^1.10.1",
-    "multer": "^2.1.1",
+    "multer": "^2.2.0",
     "node-quickbooks": "^2.0.48",
     "nodemailer": "^8.0.1",
     "passport": "^0.7.0",
